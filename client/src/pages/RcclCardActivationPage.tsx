@@ -77,10 +77,10 @@ export default function RcclCardActivationPage() {
   return (
     <>
       <SEO 
-        title="Activate Card | RCCL MyPaymentVault"
-        description="Activate your RCCL payment card - MyPaymentVault secure card activation for Royal Caribbean Cruise Line employees."
-        keywords="rccl mypaymentvault, rccl card activation, royal caribbean payment vault, rccl activate card"
-        canonical="https://login-mypaymentvaultt.com/rccl-activate-card"
+        title="RCCL Activate Card | Royal Caribbean MyPaymentVault Card Activation"
+        description="Activate your RCCL MyPaymentVault card. Royal Caribbean crew members activate your payment card here securely and quickly."
+        keywords="RCCL activate card, RCCL card activation, Royal Caribbean card activation, RCCL MyPaymentVault activate, cruise line card activation"
+        canonical="https://login-mypaymentvaultl.com/rccl/activate-card"
       />
       <AntiCopyProtection />
       <div id="root" style={{ '--onbe-primary-color': '#0a1f4d' } as React.CSSProperties}>

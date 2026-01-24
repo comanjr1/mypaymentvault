@@ -86,10 +86,10 @@ export default function CardActivationPage() {
   return (
     <>
       <SEO 
-        title="Activate Card | Login MyPaymentVault | Login Wirecard | Login Northlane | North Lane"
-        description="Activate payment cards - Login MyPaymentVault, Login Wirecard, Login North Lane, Login Northlane. Instant alternative to Wirecard 2 & Onbe 1. Fast card activation portal."
-        keywords="login mypaymentvault, login wirecard, login north lane, login northlane, login wirecard 2, login onbe 1, activate card mypaymentvault, activate wirecard card, activate northlane card, activate north lane card, wirecard 2 activation, onbe 1 activation, card activation, mypaymentvault activate, wirecard activate, northlane activate, payment card activation"
-        canonical="https://login-mypaymentvaultt.com/activate-card"
+        title="Activate Your Card | MyPaymentVault Card Activation"
+        description="Activate your MyPaymentVault card online. Input the card number that displays on the front of your card and complete the activation process securely."
+        keywords="MyPaymentVault activate card, mypaymentvault card activation, activate payment card, activate wirecard, activate northlane card, card activation portal, onbe card activation, employee card activation, payment vault card activation"
+        canonical="https://login-mypaymentvaultl.com/activate-card"
       />
       <AntiCopyProtection />
       <div>

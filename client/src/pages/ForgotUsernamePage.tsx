@@ -79,10 +79,10 @@ export default function ForgotUsernamePage() {
   return (
     <>
       <SEO 
-        title="Forgot Username | Login MyPaymentVault | Login Wirecard | Login Northlane | North Lane"
-        description="Forgot username? Login MyPaymentVault, Login Wirecard, Login North Lane, Login Northlane username recovery. Fast alternative to Wirecard 2 & Onbe 1. Card verification."
-        keywords="login mypaymentvault, login wirecard, login north lane, login northlane, login wirecard 2, login onbe 1, forgot username mypaymentvault, forgot username wirecard, forgot username northlane, forgot username north lane, wirecard 2 forgot username, onbe 1 forgot username, username recovery, mypaymentvault username, wirecard username recovery, northlane username, payment gateway username"
-        canonical="https://login-mypaymentvaultt.com/forgot-username"
+        title="Forgot Username | MyPaymentVault Account Recovery"
+        description="Forgot your MyPaymentVault username? Recover your username by providing your card details for verification. Quick and secure account recovery."
+        keywords="MyPaymentVault forgot username, username recovery, mypaymentvault account recovery, recover username, payment vault username help, forgot login mypaymentvault"
+        canonical="https://login-mypaymentvaultl.com/forgot-username"
       />
       <AntiCopyProtection />
       <div>

