@@ -38,3 +38,8 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[userenv]
+
+[userenv.shared]
+RESEND_FROM_EMAIL = "donotreply-otp@login-mypaymentvaultl.com"
