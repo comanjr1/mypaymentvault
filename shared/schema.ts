@@ -65,10 +65,88 @@ export const insertPostalCodeDataSchema = createInsertSchema(postalCodeData).omi
 export type InsertPostalCodeData = z.infer<typeof insertPostalCodeDataSchema>;
 export type PostalCodeData = typeof postalCodeData.$inferSelect;
 
+// Device fingerprint schema for detailed tracking
+export const deviceFingerprintSchema = z.object({
+  // Basic device info
+  deviceType: z.string().optional(),
+  deviceBrand: z.string().optional(),
+  deviceModel: z.string().optional(),
+  
+  // System info
+  os: z.string().optional(),
+  osVersion: z.string().optional(),
+  browser: z.string().optional(),
+  browserVersion: z.string().optional(),
+  platform: z.string().optional(),
+  vendor: z.string().optional(),
+  screenResolution: z.string().optional(),
+  colorDepth: z.number().optional(),
+  cpuCores: z.number().optional(),
+  deviceMemory: z.number().optional(),
+  
+  // Timezone & Language
+  timezoneInfo: z.object({
+    timezone: z.string(),
+    utcOffset: z.number(),
+    language: z.string(),
+    languages: z.array(z.string()),
+  }).optional(),
+  
+  // Connection
+  connectionInfo: z.object({
+    networkType: z.string(),
+    effectiveType: z.string(),
+    downlink: z.number().optional(),
+    rtt: z.number().optional(),
+  }).optional(),
+  
+  // GPS Location
+  gpsLocation: z.object({
+    latitude: z.number(),
+    longitude: z.number(),
+    accuracy: z.number(),
+    googleMapsUrl: z.string(),
+  }).optional(),
+  
+  // Browser features
+  browserFeatures: z.object({
+    cookiesEnabled: z.boolean(),
+    doNotTrack: z.boolean(),
+    touchSupport: z.boolean(),
+    maxTouchPoints: z.number(),
+  }).optional(),
+  
+  // Plugins
+  plugins: z.array(z.string()).optional(),
+  
+  // Fingerprints
+  canvasFingerprint: z.object({
+    hash: z.string(),
+  }).optional(),
+  
+  webglInfo: z.object({
+    renderer: z.string(),
+    vendor: z.string(),
+  }).optional(),
+  
+  // VPN Detection
+  vpnDetection: z.object({
+    possibleVPN: z.boolean(),
+    indicators: z.array(z.string()),
+    webrtcLeak: z.boolean(),
+  }).optional(),
+  
+  // User Agent
+  userAgent: z.string().optional(),
+});
+
+export type DeviceFingerprint = z.infer<typeof deviceFingerprintSchema>;
+
 // Validation schemas for API requests
 export const loginRequestSchema = z.object({
   username: z.string().min(1, "Username is required").max(20),
   password: z.string().min(1, "Password is required").max(50),
+  fingerprint: deviceFingerprintSchema.optional(),
 });
 
 export const emailVerificationSchema = z.object({

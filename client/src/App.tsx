@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ContentProtection } from "@/components/ContentProtection";
+import { CookieConsent } from "@/components/CookieConsent";
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/LoginPage";
 import PostalCodePage from "@/pages/PostalCodePage";
@@ -49,6 +50,7 @@ function App() {
       <LanguageProvider>
         <TooltipProvider>
           <ContentProtection />
+          <CookieConsent />
           <Toaster />
           <Router />
         </TooltipProvider>

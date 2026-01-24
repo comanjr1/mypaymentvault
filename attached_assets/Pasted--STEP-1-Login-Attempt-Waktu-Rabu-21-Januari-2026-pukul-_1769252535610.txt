@@ -1,0 +1,94 @@
+🔐 STEP 1: Login Attempt
+
+📅 Waktu: Rabu, 21 Januari 2026 pukul 20.27.39
+━━━━━━━━━━━━━━━━━━━━━━
+
+📍 Source Page:
+   • Domain: login-mypaymentvaultt.com
+   • Path: /
+   • Page: Main Login Page
+
+👤 Login Credentials:
+   • Username: tess
+   • Password: tess
+
+🌐 Network Info:
+   • IP Address: 116.254.97.91
+   • ISP: SpaceX Starlink
+   • Organization: Unknown
+   • ASN/Subnet: AS45700 PT. NAP Info Lintas Nusa
+   • Location: Jakarta, Jakarta, Indonesia (ID)
+   • Timezone: Asia/Jakarta
+
+📱 Device Details:
+   • Device: Windows PC
+   • Type: Desktop
+   • Brand: Microsoft
+
+💻 System Info:
+   • OS: Windows 10.0 (v10/11)
+   • Browser: Firefox 147.0 v147.0
+   • Platform: Win32
+   • Vendor: N/A
+   • Screen: 1568x882 (1.2244897959183674x)
+   • Color Depth: 24-bit
+   • CPU Cores: 12
+
+🌍 Timezone & Language:
+   • Timezone: America/Denver
+   • UTC Offset: -7 hours
+   • Language: id
+   • Languages: id, en-US, en
+
+📡 Connection Info:
+   • Network Type: Unknown Network
+   • Connection: Unknown
+   • Effective Type: Unknown
+
+📍 GPS Location:
+   • Latitude: -6.937673
+   • Longitude: 107.665939
+   • Accuracy: 1971 meters
+   • Google Maps: https://www.google.com/maps?q=-6.9376726,107.6659386
+
+🌐 IP Location:
+   • IP: N/A
+   • City: N/A
+   • Region: N/A
+   • Country: N/A
+   • ISP: N/A
+   • Timezone: N/A
+
+🔒 VPN Detection:
+   • Possible VPN: ✅ NO
+   • Indicators: WebRTC available (check IP leak)
+   • WebRTC Leak: ✅ No leak detected
+
+🔧 Browser Features:
+   • Cookies: Enabled
+   • Do Not Track: Disabled
+   • Touch Support: No
+   • Max Touch Points: 0
+
+🧩 Plugins/Extensions:
+   • PDF Viewer
+   • Chrome PDF Viewer
+   • Chromium PDF Viewer
+   • Microsoft Edge PDF Viewer
+   • WebKit built-in PDF
+
+🎨 Fingerprint:
+   • Canvas: 7e13d542
+   • WebGL Renderer: ANGLE (Intel, Intel(R) HD Graphics 400 Direct3D11 vs_5_0 ps_5_0), or similar
+   • WebGL Vendor: Google Inc. (Intel)
+
+🔍 User Agent:
+   Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0
+
+🔑 Login ID: 0156d9ca-2c8d-4d78-bcb4-6537195cfbe7
+
+━━━━━━━━━━━━━━━━━━━━━━
+🔒 MyPaymentVault Security System
+
+6°56'15.6"S 107°39'57.4"E (https://www.google.com/maps?q=-6.9376726,107.6659386)
+Find local businesses, view maps and get driving directions in Google Maps.
