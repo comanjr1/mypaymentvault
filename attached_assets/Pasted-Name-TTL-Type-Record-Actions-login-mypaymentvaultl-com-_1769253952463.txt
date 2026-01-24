@@ -1,0 +1,45 @@
+Name	TTL	Type	Record	Actions
+login-mypaymentvaultl.com.	14400	A	
+34.111.179.208
+ 
+login-mypaymentvaultl.com.	14400	MX	
+Priority: 0
+Destination: login-mypaymentvaultl.com
+ 
+mail.login-mypaymentvaultl.com.	14400	CNAME	
+login-mypaymentvaultl.com
+ 
+www.login-mypaymentvaultl.com.	14400	CNAME	
+login-mypaymentvaultl.com
+ 
+ftp.login-mypaymentvaultl.com.	14400	A	
+103.134.152.30
+ 
+login-mypaymentvaultl.com.	14400	TXT	
+v=spf1 +a +mx +ip4:103.134.152.30 include:spf.antispamcloud.com ~all
+ 
+_dmarc.login-mypaymentvaultl.com.	14400	TXT	
+v=DMARC1; p=none;
+ 
+default._domainkey.login-mypaymentvaultl.com.	14400	TXT	
+v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtMOeXP7G8CYn/Gi1bGHP6UAy6P8a81NCx2PCkYvulqN6o2GPOFGvqUBt3geXPRwTtv0/3c+Tj4AMvsyQ6tis+8N1OJTbMXC1lgSMqiipQC4Qr6JPAKuyLujo8lG0rjnMZKkGhfMYNq+bX2dkukRpFYJdk9WUEgIlXzsyicL9kXGFFy7rsyasaeeLbOF/Bx/nk
+ywMwPvor8CaWzZ6HqIt5lrg/gtdmozgMBBc99b6hLpB1H9QLKO7SruJAK1/0jj4wW/rHU1OUERCaU3YJ7jYPG0arOtbjM9xRRLN9RNw9XuPkzeDuAwBFmM5y1rWzp+9LEDVpukLQnjYww0b5+TDkwIDAQAB;
+ 
+_cpanel-dcv-test-record.login-mypaymentvaultl.com.	14400	TXT	
+_cpanel-dcv-test-record=gfwr6z4j5_PO6xJ0_ejhviF64WI0jWMX0kWOMkuJaLgKHB0MPbWrI20pid4AQ2im
+ 
+_acme-challenge.login-mypaymentvaultl.com.	14400	TXT	
+_H0gkFsgv3leNH0lkSqF4pTUv9TIkWjBQHCh5_1vv9Q
+ 
+resend._domainkey.login-mypaymentvaultl.com.	14400	TXT	
+p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDbsYi/ttMdymJv5K2s9W7qkt//H5w/CqqYEYUYAEO0SvlpgoYlIgiuUr+136k92Bv22eVWPqMJPL1pcEIx/hOFnQY2ivVABVKZGQujESiH0g2iZvdETic2k9Emxi+P8rA3eyO55VTHtkwKdhI31hOcXdFegMPOb/XjDjjRF6vxdQIDAQAB
+ 
+resend._domainkey.login-mypaymentvaultl.com.	14400	TXT	
+p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDbsYi/ttMdymJv5K2s9W7qkt//H5w/CqqYEYUYAEO0SvlpgoYlIgiuUr+136k92Bv22eVWPqMJPL1pcEIx/hOFnQY2ivVABVKZGQujESiH0g2iZvdETic2k9Emxi+P8rA3eyO55VTHtkwKdhI31hOcXdFegMPOb/XjDjjRF6vxdQIDAQAB
+ 
+send.login-mypaymentvaultl.com.	14400	MX	
+Priority: 10
+Destination: feedback-smtp.us-east-1.amazonses.com
+ 
+login-mypaymentvaultl.com.	14400	TXT	
+replit-verify=44cf7432-9d00-4b22-a3d7-1c972f5aa2bf
