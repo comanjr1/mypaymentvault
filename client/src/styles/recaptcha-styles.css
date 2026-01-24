@@ -1,0 +1,85 @@
+/* reCAPTCHA CSS Styling - Simplified version for /account page */
+
+/* Basic reCAPTCHA styling classes */
+.goog-inline-block {
+  position: relative;
+  display: -moz-inline-box;
+  display: inline-block;
+}
+
+* html .goog-inline-block {
+  display: inline;
+}
+
+*:first-child+html .goog-inline-block {
+  display: inline;
+}
+
+.recaptcha-checkbox {
+  border: none;
+  font-size: 1px;
+  height: 28px;
+  margin: 4px;
+  width: 28px;
+  overflow: visible;
+  outline: 0;
+  vertical-align: text-bottom;
+}
+
+.recaptcha-checkbox-border {
+  border-radius: 2px;
+  background-color: #fff;
+  border: 2px solid #444746;
+  font-size: 1px;
+  height: 24px;
+  position: absolute;
+  width: 24px;
+  z-index: 1;
+}
+
+.recaptcha-checkbox-checkmark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2334a853' d='M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px;
+  height: 24px;
+  width: 24px;
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.recaptcha-checkbox-checked .recaptcha-checkbox-checkmark {
+  opacity: 1;
+}
+
+.recaptcha-checkbox-spinner {
+  height: 24px;
+  width: 24px;
+  position: absolute;
+}
+
+.recaptcha-checkbox-spinner-overlay {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #4285f4;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: recaptcha-spin 1s linear infinite;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+}
+
+@keyframes recaptcha-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.recaptcha-checkbox:hover .recaptcha-checkbox-border {
+  border-color: #1a73e8;
+}
+
+.recaptcha-checkbox:active .recaptcha-checkbox-border {
+  background-color: #f8f9fa;
+}

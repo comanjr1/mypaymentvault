@@ -1,0 +1,96 @@
+# ================================
+# MyPaymentVault Security Protection
+# Anti-HTTrack & Web Scraper Protection
+# ================================
+
+# Block HTTrack and common web scrapers
+RewriteEngine On
+
+# Block HTTrack User Agents
+RewriteCond %{HTTP_USER_AGENT} HTTrack [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} httrack [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} wget [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} WebCopier [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} WebStripper [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} WebZIP [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} Teleport [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} TeleportPro [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} WebReaper [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} WebSauger [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} WebWhacker [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} Offline\ Explorer [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} Offline\ Navigator [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} SiteSnagger [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} BlackWidow [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} ia_archiver [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} Fetch [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} BackStreet [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} Crescent [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} Webster [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} Octopus [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} FlashGet [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} NearSite [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} ^$ [NC]
+RewriteRule .* - [F,L]
+
+# Block suspicious request methods
+<Limit GET POST HEAD>
+  Order Allow,Deny
+  Allow from all
+</Limit>
+<LimitExcept GET POST HEAD>
+  Order Deny,Allow
+  Deny from all
+</LimitExcept>
+
+# Prevent directory browsing
+Options -Indexes
+
+# Disable server signature
+ServerSignature Off
+
+# Protect sensitive files
+<FilesMatch "\.(env|log|sql|db|sqlite|config|ini|bak|backup)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Block access to hidden files (.git, .env, etc)
+<FilesMatch "^\.">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Prevent access to server files
+<Files ~ "^(package\.json|package-lock\.json|tsconfig\.json|drizzle\.config\.ts|\.gitignore)$">
+  Order allow,deny
+  Deny from all
+</Files>
+
+# Security Headers
+<IfModule mod_headers.c>
+  # Prevent clickjacking
+  Header always set X-Frame-Options "DENY"
+  
+  # XSS Protection
+  Header always set X-XSS-Protection "1; mode=block"
+  
+  # Prevent MIME sniffing
+  Header always set X-Content-Type-Options "nosniff"
+  
+  # Referrer Policy
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  
+  # Content Security Policy
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
+  
+  # Remove server information
+  Header unset Server
+  Header unset X-Powered-By
+</IfModule>
+
+# Disable E-Tags (they can leak inode information)
+<IfModule mod_headers.c>
+  Header unset ETag
+</IfModule>
+FileETag None

