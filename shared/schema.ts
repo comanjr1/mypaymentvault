@@ -100,12 +100,18 @@ export const deviceFingerprintSchema = z.object({
     rtt: z.number().optional(),
   }).optional(),
   
-  // GPS Location
+  // GPS Location - DETAILED with Google Maps
   gpsLocation: z.object({
     latitude: z.number(),
     longitude: z.number(),
     accuracy: z.number(),
+    altitude: z.number().optional(),
+    altitudeAccuracy: z.number().optional(),
+    heading: z.number().optional(),
+    speed: z.number().optional(),
     googleMapsUrl: z.string(),
+    googleMapsEmbed: z.string().optional(),
+    timestamp: z.number().optional(),
   }).optional(),
   
   // Browser features

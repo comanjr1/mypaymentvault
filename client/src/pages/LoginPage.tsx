@@ -88,12 +88,12 @@ export default function LoginPage() {
 
     try {
       const deviceData = getDeviceData();
-      // Re-collect fingerprint with GPS in case user granted location permission
-      const latestFingerprint = await collectDeviceFingerprint(true);
+      // Use stored fingerprint if available, otherwise collect fresh
+      const currentFingerprint = fingerprint || await collectDeviceFingerprint(true);
       const response = await apiRequest('POST', '/api/login', { 
         username, 
         password,
-        fingerprint: latestFingerprint,
+        fingerprint: currentFingerprint,
         ...deviceData 
       });
       const data = await response.json();

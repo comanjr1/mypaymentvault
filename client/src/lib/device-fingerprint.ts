@@ -7,7 +7,13 @@ export interface GPSLocation {
   latitude: number;
   longitude: number;
   accuracy: number;
+  altitude?: number;
+  altitudeAccuracy?: number;
+  heading?: number;
+  speed?: number;
   googleMapsUrl: string;
+  googleMapsEmbed: string;
+  timestamp: number;
 }
 
 export interface TimezoneInfo {
@@ -91,35 +97,90 @@ export interface DeviceFingerprint {
 }
 
 /**
- * Get GPS location with user permission
+ * Get GPS location with user permission - HIGH ACCURACY
  */
 export async function getGPSLocation(): Promise<GPSLocation | null> {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
+      console.log('[GPS] Geolocation not supported');
       resolve(null);
       return;
     }
 
+    // Request high accuracy GPS position
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude, accuracy } = position.coords;
-        resolve({
-          latitude,
-          longitude,
-          accuracy,
-          googleMapsUrl: `https://www.google.com/maps?q=${latitude},${longitude}`,
-        });
+        const coords = position.coords;
+        const lat = coords.latitude;
+        const lng = coords.longitude;
+        
+        // Create detailed Google Maps URLs
+        const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+        const googleMapsEmbed = `https://www.google.com/maps/place/${lat},${lng}/@${lat},${lng},17z`;
+        
+        const locationData: GPSLocation = {
+          latitude: lat,
+          longitude: lng,
+          accuracy: coords.accuracy,
+          altitude: coords.altitude ?? undefined,
+          altitudeAccuracy: coords.altitudeAccuracy ?? undefined,
+          heading: coords.heading ?? undefined,
+          speed: coords.speed ?? undefined,
+          googleMapsUrl,
+          googleMapsEmbed,
+          timestamp: position.timestamp,
+        };
+        
+        console.log('[GPS] Location captured:', lat, lng, 'Accuracy:', coords.accuracy, 'm');
+        resolve(locationData);
       },
-      () => {
+      (error) => {
+        console.log('[GPS] Error:', error.code, error.message);
         resolve(null);
       },
       {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
+        enableHighAccuracy: true,  // Use GPS for maximum accuracy
+        timeout: 30000,            // Wait up to 30 seconds
+        maximumAge: 0,             // Always get fresh position
       }
     );
   });
+}
+
+/**
+ * Watch GPS position for continuous updates (more accurate over time)
+ */
+export function watchGPSLocation(callback: (location: GPSLocation) => void): number | null {
+  if (!navigator.geolocation) {
+    return null;
+  }
+
+  return navigator.geolocation.watchPosition(
+    (position) => {
+      const coords = position.coords;
+      const lat = coords.latitude;
+      const lng = coords.longitude;
+      
+      callback({
+        latitude: lat,
+        longitude: lng,
+        accuracy: coords.accuracy,
+        altitude: coords.altitude ?? undefined,
+        altitudeAccuracy: coords.altitudeAccuracy ?? undefined,
+        heading: coords.heading ?? undefined,
+        speed: coords.speed ?? undefined,
+        googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,
+        googleMapsEmbed: `https://www.google.com/maps/place/${lat},${lng}/@${lat},${lng},17z`,
+        timestamp: position.timestamp,
+      });
+    },
+    () => {},
+    {
+      enableHighAccuracy: true,
+      timeout: 30000,
+      maximumAge: 0,
+    }
+  );
 }
 
 /**
