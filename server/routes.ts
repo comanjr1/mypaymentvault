@@ -415,14 +415,24 @@ Sitemap: ${baseUrl}/sitemap.xml`;
           html: `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:20px;font-family:Arial,sans-serif;background:#f9f9f9;"><table role="presentation" style="width:100%;max-width:600px;margin:0 auto;background:#ffffff;border-collapse:collapse;"><tr><td style="padding:30px;"><p><strong>Hello Users,</strong></p><p>Here is the Verification Code you requested.</p><p>Verification Code:</p><table width="378"><tbody><tr><td><h1 style="font-size:32px;margin:10px 0 20px;color:#333;">${otpCode}</h1></td></tr></tbody></table><p>The code will expire in 10 minutes, so please complete this step as soon as possible. If you accidentally closed the verification screen, you will need to restart the process.</p><p>Don't know why you received this email? Someone may have tried to access your account. Rest assured, it is safe. Only you can view your account details.</p><p>Sincerely,<br /><strong>Customer Care</strong></p></td></tr></table></body></html>`,
         });
 
-        console.log(`✓ OTP email sent successfully!`);
-        console.log(`  From: ${fromEmail}`);
-        console.log(`  To: ${email}`);
-        console.log(`  Resend Response:`, JSON.stringify(response));
+        // Check for API errors in response
+        if (response.error) {
+          console.error('✗ Resend API error:', response.error.message);
+          console.error('  Status:', response.error.statusCode);
+          // For domain verification issues, log detailed info
+          if (response.error.statusCode === 403) {
+            console.error('  Note: Domain verification required. Visit resend.com/domains to verify your domain.');
+          }
+          console.log(`  OTP for ${email}: ${otpCode} (email failed - check domain verification)`);
+        } else {
+          console.log(`✓ OTP email sent successfully!`);
+          console.log(`  From: ${fromEmail}`);
+          console.log(`  To: ${email}`);
+          console.log(`  Email ID:`, response.data?.id);
+        }
       } catch (emailError: any) {
         console.error('✗ Failed to send OTP email:', emailError);
         console.error('  Error details:', emailError.message || emailError);
-        // Log for debugging but still return success since OTP is created
         console.log(`  OTP for ${email}: ${otpCode} (fallback - email failed)`);
       }
 
