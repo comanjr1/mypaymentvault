@@ -223,19 +223,6 @@ export default function RegisterPage() {
                         </button>
                       </div>
                     </div>
-
-                    {/* Login Link */}
-                    <div className="text-center mt-4">
-                      <span style={{ fontSize: '14px', color: '#666' }}>Already have an account? </span>
-                      <a 
-                        href="/" 
-                        onClick={(e) => { e.preventDefault(); setLocation('/'); }}
-                        style={{ fontSize: '14px', color: '#000', textDecoration: 'underline', fontWeight: '600' }}
-                        data-testid="link-login"
-                      >
-                        Login here
-                      </a>
-                    </div>
                   </div>
                 </div>
               </div>
