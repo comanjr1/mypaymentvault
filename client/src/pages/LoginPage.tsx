@@ -466,6 +466,9 @@ export default function LoginPage() {
             <p className="onbe-textcomponent-header-otp-modal">{t('otp.title')}</p>
             <p style={{ fontSize: '14px', marginBottom: '8px' }}>{t('otp.description')} <strong>{maskedEmail}</strong></p>
             <p style={{ fontSize: '14px', marginBottom: '8px' }}>{t('otp.expiry')}</p>
+            <p style={{ fontSize: '13px', marginBottom: '8px', color: '#666', fontStyle: 'italic' }}>
+              If you don't see the code in your inbox, please check your spam or junk folder.
+            </p>
             <div style={{ position: 'relative', margin: '20px auto' }}>
               <input 
                 id="otpCode" 
