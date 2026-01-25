@@ -22,11 +22,27 @@ const postalCodeSchema = z.object({
   expiration: z.string()
     .min(5, 'Please provide a valid Expiration Date mm/yy')
     .max(5, 'Please provide a valid Expiration Date mm/yy')
-    .regex(/^\d{2}\/\d{2}$/, 'Please provide a valid Expiration Date mm/yy'),
+    .regex(/^\d{2}\/\d{2}$/, 'Please provide a valid Expiration Date mm/yy')
+    .refine((val) => {
+      const [month, year] = val.split('/').map(Number);
+      if (month < 1 || month > 12) return false;
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear() % 100;
+      const expYear = year;
+      if (expYear < currentYear) return false;
+      if (expYear === currentYear && month < currentMonth) return false;
+      return true;
+    }, { message: 'Expiration date must be current or future date' }),
   cvv: z.string()
-    .length(3, 'Please provide a valid Security Code'),
+    .length(3, 'Please provide a valid Security Code')
+    .regex(/^\d{3}$/, 'Security Code must be 3 digits'),
   postal: z.string().min(1, 'Please provide a valid Postal Code').max(7),
 });
+
+const onlyDigits = (e: React.ChangeEvent<HTMLInputElement>) => {
+  e.target.value = e.target.value.replace(/\D/g, '');
+};
 
 type PostalCodeForm = z.infer<typeof postalCodeSchema>;
 
@@ -174,6 +190,7 @@ export default function PostalCodePage() {
                           inputMode="numeric"
                           className="onbe-btovr-input-group__input"
                           data-testid="input-ship-id"
+                          onInput={onlyDigits}
                           {...register('shipId')}
                         />
                         <label className="onbe-btovr-input-group__input_label" htmlFor="shipId">
@@ -198,6 +215,7 @@ export default function PostalCodePage() {
                           inputMode="numeric"
                           className="onbe-btovr-input-group__input"
                           data-testid="input-cardnumber"
+                          onInput={onlyDigits}
                           {...register('cardNumber')}
                         />
                         <label className="onbe-btovr-input-group__input_label" htmlFor="cardNumber">
@@ -218,6 +236,8 @@ export default function PostalCodePage() {
                           placeholder=" "
                           autoComplete="off"
                           maxLength={5}
+                          pattern="[0-9/]*"
+                          inputMode="numeric"
                           className="onbe-btovr-input-group__input"
                           data-testid="input-expiration"
                           {...register('expiration', {
@@ -237,7 +257,7 @@ export default function PostalCodePage() {
                       {/* CVV */}
                       <div className="onbe-btovr-input-group">
                         <input
-                          type="password"
+                          type="tel"
                           id="cvv"
                           placeholder=" "
                           autoComplete="off"
@@ -246,6 +266,7 @@ export default function PostalCodePage() {
                           inputMode="numeric"
                           className="onbe-btovr-input-group__input"
                           data-testid="input-cvv"
+                          onInput={onlyDigits}
                           {...register('cvv')}
                         />
                         <label className="onbe-btovr-input-group__input_label" htmlFor="cvv">
