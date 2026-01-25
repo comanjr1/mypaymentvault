@@ -450,7 +450,7 @@ export default function ContactInfoPage() {
                         <input
                           type="text"
                           id="dateOfBirth"
-                          placeholder="MM-DD-YYYY"
+                          placeholder=" "
                           maxLength={10}
                           className="onbe-btovr-input-group__input"
                           data-testid="input-date-of-birth"
