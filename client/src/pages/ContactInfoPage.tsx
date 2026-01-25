@@ -231,25 +231,16 @@ export default function ContactInfoPage() {
           {/* Registration Header */}
           <div className="onbe-registration-header">
             <div className="container">
-              <div style={{ 
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                gap: '20px',
-                flexWrap: 'wrap'
-              }}>
-                <div style={{ flex: '1 1 auto', minWidth: '300px' }}>
-                  <h3 className="onbe-h3 onbe-sidebar-ovrd-h3" style={{ textAlign: 'left', margin: '0 0 10px 0' }}>Confirm Your Data Security & Login Now</h3>
-                  <h6 className="onbe-h6 onbe-sidebar-ovrd-h3" style={{ textAlign: 'left', margin: '0' }}>As a final step to activate and secure your account, we require data verification. Please complete the following information</h6>
+              <div className="onbe-registration-header-content">
+                <div>
+                  <h3 className="onbe-h3 onbe-sidebar-ovrd-h3">Customer Contact Verification</h3>
+                  <h6 className="onbe-h6 onbe-sidebar-ovrd-h3">For customer submissions &amp; claims, please fill out the form below.</h6>
                 </div>
-                <div style={{ flex: '0 0 auto' }}>
-                  <img 
-                    src={contactIconSvg} 
-                    alt="MyPaymentVault Logo"
-                    style={{ maxWidth: '150px', height: 'auto', display: 'block' }}
-                    data-testid="img-contact-logo"
-                  />
-                </div>
+                <img 
+                  src={contactIconSvg} 
+                  alt="Registration - Contact Inforamation"
+                  data-testid="img-contact-logo"
+                />
               </div>
             </div>
           </div>
