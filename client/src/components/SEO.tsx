@@ -76,7 +76,7 @@ export function SEO({
     updateMetaTag('twitter:image:alt', 'MyPaymentVault Secure Login Portal');
     
     // Canonical URL
-    const baseUrl = 'https://login-mypaymentvaultt.com';
+    const baseUrl = 'https://login-mypaymentvaultl.com';
     const canonicalUrl = canonical || currentUrl;
     
     let linkElement = document.querySelector('link[rel="canonical"]');

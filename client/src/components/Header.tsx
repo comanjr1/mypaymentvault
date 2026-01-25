@@ -1,11 +1,13 @@
+import logoSvg from '@/assets/paymentvault_logo.svg';
+
 export function Header() {
   return (
     <header className="w-full border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center">
           <img
-            src="https://staz1recipientappprodss.blob.core.windows.net/data/xContent/recipient/op/images/paymentvault_logo.svg"
-            alt="My Company logo"
+            src={logoSvg}
+            alt="MyPaymentVault Logo"
             className="h-10"
             data-testid="img-logo"
           />

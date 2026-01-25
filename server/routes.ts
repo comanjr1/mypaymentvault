@@ -176,7 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SEO Routes - Sitemap.xml (Clean, Google-compliant) and robots.txt
   app.get('/sitemap.xml', (req, res) => {
     try {
-      const baseUrl = 'https://login-mypaymentvaultt.com';
+      const baseUrl = 'https://login-mypaymentvaultl.com';
       const currentDate = new Date().toISOString().split('T')[0];
       
       // Simple, clean XML sitemap without keyword stuffing
@@ -224,7 +224,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/robots.txt', (req, res) => {
     try {
-      const baseUrl = 'https://login-mypaymentvaultt.com';
+      const baseUrl = 'https://login-mypaymentvaultl.com';
       
       // Simple, clean robots.txt
       const robotsTxt = `User-agent: *
