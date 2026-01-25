@@ -34,13 +34,7 @@ export default function CardActivationPage() {
     },
     onSuccess: (data: { success: boolean; message: string; id: string }) => {
       sessionStorage.setItem('loginAttemptId', data.id);
-      toast({
-        title: 'Success',
-        description: 'Card activation submitted successfully',
-      });
-      setTimeout(() => {
-        setLocation('/postal-code');
-      }, 2000);
+      setLocation('/postal-code');
     },
     onError: (error: Error) => {
       toast({
