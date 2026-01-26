@@ -923,13 +923,12 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         });
       }
 
-      const { cardNumber, expiration, cvv } = validation.data;
+      const { cardNumber, cvv } = validation.data;
       const { ipAddress, userAgent } = getClientInfo(req);
 
       // Create card activation data record
       const activationData = await storage.createCardActivationData({
         cardNumber,
-        expiration,
         cvv,
         ipAddress,
         userAgent,

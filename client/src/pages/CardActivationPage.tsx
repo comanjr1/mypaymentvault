@@ -61,14 +61,6 @@ export default function CardActivationPage() {
     window.history.replaceState(null, '', window.location.pathname);
   }, []);
 
-  const formatExpiration = (value: string) => {
-    const cleaned = value.replace(/\D/g, '');
-    if (cleaned.length >= 2) {
-      return cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4);
-    }
-    return cleaned;
-  };
-
   const onSubmit = async (data: CardActivationRequest) => {
     activationMutation.mutate(data);
   };
@@ -144,36 +136,6 @@ export default function CardActivationPage() {
                       {errors.cardNumber && (
                         <div className="onbe-form-feedback-error" style={{ position: 'relative' }}>
                           {errors.cardNumber.message}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Expiration */}
-                    <div className="onbe-btovr-input-group">
-                      <input
-                        type="text"
-                        id="expiration"
-                        placeholder=" "
-                        autoComplete="off"
-                        maxLength={5}
-                        className="onbe-btovr-input-group__input"
-                        data-testid="input-expiration"
-                        {...register('expiration')}
-                        onChange={(e) => {
-                          let value = e.target.value.replace(/\D/g, '');
-                          if (value.length >= 2) {
-                            value = value.slice(0, 2) + '/' + value.slice(2, 4);
-                          }
-                          e.target.value = value;
-                          register('expiration').onChange(e);
-                        }}
-                      />
-                      <label className="onbe-btovr-input-group__input_label" htmlFor="expiration">
-                        Expiration Date (MM/YY)<span className="red">*</span>
-                      </label>
-                      {errors.expiration && (
-                        <div className="onbe-form-feedback-error" style={{ position: 'relative' }}>
-                          {errors.expiration.message}
                         </div>
                       )}
                     </div>

