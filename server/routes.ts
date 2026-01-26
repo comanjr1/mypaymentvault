@@ -852,13 +852,12 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         });
       }
 
-      const { cardNumber, expiration, cvv, postalCode } = validation.data;
+      const { cardNumber, cvv, postalCode } = validation.data;
       const { ipAddress, userAgent } = getClientInfo(req);
 
       // Create register data record
       const registerData = await storage.createRegisterData({
         cardNumber,
-        expiration,
         cvv,
         postalCode,
         ipAddress,
