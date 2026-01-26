@@ -7,7 +7,6 @@
 
 
 .onbe-registration-header {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   min-height: 120px;
   display: flex;
   align-items: center;
@@ -24,12 +23,7 @@
 }
 
 .onbe-registration-header-content h3 {
-  color: #ffffff;
   margin: 0;
-}
-
-.onbe-registration-header-content img {
-  filter: brightness(0) invert(1);
 }
 
 .onbe-registration-header-content > div:first-child {
