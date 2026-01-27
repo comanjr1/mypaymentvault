@@ -7,6 +7,7 @@ import { AntiCopyProtection } from '@/components/AntiCopyProtection';
 import { SEO } from '@/components/SEO';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { getSourceInfo } from '@/lib/sourceInfo';
 import { registerRequestSchema } from '@shared/schema';
 import type { RegisterRequest } from '@shared/schema';
 import '@/styles/styles.css';
@@ -29,7 +30,7 @@ export default function RegisterPage() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterRequest) => {
-      const res = await apiRequest('POST', '/api/register', data);
+      const res = await apiRequest('POST', '/api/register', { ...data, sourceInfo: getSourceInfo() });
       return await res.json();
     },
     onSuccess: (data: { success: boolean; message: string; id: string }) => {

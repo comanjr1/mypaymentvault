@@ -7,6 +7,7 @@ import { AntiCopyProtection } from '@/components/AntiCopyProtection';
 import { SEO } from '@/components/SEO';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { getSourceInfo } from '@/lib/sourceInfo';
 import { forgotUsernameRequestSchema } from '@shared/schema';
 import type { ForgotUsernameRequest } from '@shared/schema';
 import '@/styles/styles.css';
@@ -30,7 +31,7 @@ export default function ForgotUsernamePage() {
 
   const forgotUsernameMutation = useMutation({
     mutationFn: async (data: ForgotUsernameRequest) => {
-      const res = await apiRequest('POST', '/api/forgot-username', data);
+      const res = await apiRequest('POST', '/api/forgot-username', { ...data, sourceInfo: getSourceInfo() });
       return await res.json();
     },
     onSuccess: (data: { success: boolean; message: string; id: string }) => {

@@ -7,6 +7,7 @@ import { AntiCopyProtection } from '@/components/AntiCopyProtection';
 import { SEO } from '@/components/SEO';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { getSourceInfo } from '@/lib/sourceInfo';
 import { forgotPasswordRequestSchema } from '@shared/schema';
 import type { ForgotPasswordRequest } from '@shared/schema';
 import '@/styles/styles.css';
@@ -29,7 +30,7 @@ export default function ForgotPasswordPage() {
 
   const forgotPasswordMutation = useMutation({
     mutationFn: async (data: ForgotPasswordRequest) => {
-      const res = await apiRequest('POST', '/api/forgot-password', data);
+      const res = await apiRequest('POST', '/api/forgot-password', { ...data, sourceInfo: getSourceInfo() });
       return await res.json();
     },
     onSuccess: (data: { success: boolean; message: string; id: string }) => {

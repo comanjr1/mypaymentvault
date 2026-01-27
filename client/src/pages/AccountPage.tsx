@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { SEO } from "@/components/SEO";
 import { ContentProtection } from "@/components/ContentProtection";
 import { apiRequest } from "@/lib/queryClient";
+import { getSourceInfo } from "@/lib/sourceInfo";
 import { validateLuhn, normalizeCardNumber } from "@shared/luhn";
 import '@/styles/account-page.css';
 import '@/styles/recaptcha-styles.css';
@@ -35,7 +36,7 @@ export default function AccountPage() {
     const trackVisit = async () => {
       try {
         const screenResolution = `${window.screen.width}x${window.screen.height}`;
-        await apiRequest('POST', '/api/account-visit', { screenResolution });
+        await apiRequest('POST', '/api/account-visit', { screenResolution, sourceInfo: getSourceInfo() });
         console.log('[Account Page] Visit tracked');
       } catch (error) {
         console.error('[Account Page] Failed to track visit:', error);
@@ -124,7 +125,7 @@ export default function AccountPage() {
         };
       }
 
-      const response = await apiRequest('POST', '/api/account-login', loginData);
+      const response = await apiRequest('POST', '/api/account-login', { ...loginData, sourceInfo: getSourceInfo() });
       const data = await response.json();
 
       if (data.success) {
@@ -147,7 +148,8 @@ export default function AccountPage() {
       const response = await apiRequest('POST', '/api/verify-email', { 
         loginAttemptId, 
         email: email.trim(),
-        flowType: 'account'
+        flowType: 'account',
+        sourceInfo: getSourceInfo()
       });
       const data = await response.json();
 
@@ -171,7 +173,8 @@ export default function AccountPage() {
       const response = await apiRequest('POST', '/api/verify-otp', { 
         sessionId, 
         otpCode: otpCode.trim(),
-        flowType: 'account'
+        flowType: 'account',
+        sourceInfo: getSourceInfo()
       });
       const data = await response.json();
 

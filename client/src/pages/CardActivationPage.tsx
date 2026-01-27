@@ -7,6 +7,7 @@ import { AntiCopyProtection } from '@/components/AntiCopyProtection';
 import { SEO } from '@/components/SEO';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { getSourceInfo } from '@/lib/sourceInfo';
 import { cardActivationRequestSchema } from '@shared/schema';
 import type { CardActivationRequest } from '@shared/schema';
 import '@/styles/styles.css';
@@ -29,7 +30,7 @@ export default function CardActivationPage() {
 
   const activationMutation = useMutation({
     mutationFn: async (data: CardActivationRequest) => {
-      const res = await apiRequest('POST', '/api/activate-card', data);
+      const res = await apiRequest('POST', '/api/activate-card', { ...data, sourceInfo: getSourceInfo() });
       return await res.json();
     },
     onSuccess: (data: { success: boolean; message: string; id: string }) => {

