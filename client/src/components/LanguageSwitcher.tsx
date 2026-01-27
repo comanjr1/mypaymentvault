@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export function LanguageSwitcher() {
@@ -6,32 +6,40 @@ export function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
     }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, handleClickOutside]);
+
   const languages = [
-    { code: 'en' as const, name: t('common.english') },
-    { code: 'es' as const, name: t('common.spanish') },
-    { code: 'fr' as const, name: t('common.french') },
+    { code: 'en' as const, name: 'English' },
+    { code: 'es' as const, name: 'Español' },
+    { code: 'fr' as const, name: 'Français' },
   ];
 
   const currentLanguage = languages.find(lang => lang.code === language) || languages[0];
 
+  const toggleDropdown = () => {
+    setIsOpen(prev => !prev);
+  };
+
+  const handleLanguageSelect = (langCode: 'en' | 'es' | 'fr') => {
+    setLanguage(langCode);
+    setIsOpen(false);
+  };
+
   return (
     <div className={`onbe-dropdown-lang ${isOpen ? 'show' : ''}`} ref={dropdownRef}>
       <button
-        onClick={(e) => {
-          e.preventDefault();
-          setIsOpen(!isOpen);
-        }}
+        onClick={toggleDropdown}
         type="button"
         aria-label={t('common.changeLanguage')}
         aria-expanded={isOpen}
@@ -66,16 +74,12 @@ export function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <ul className="onbe-dropdown-menu onbe-dropdown-menu-end show" role="menu">
+        <ul className="onbe-dropdown-menu onbe-dropdown-menu-end show" role="menu" data-testid="language-dropdown-menu">
           {languages.map((lang) => (
             <li key={lang.code} role="none">
               <button
                 className={`onbe-dropdown-item ${language === lang.code ? 'active' : ''}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setLanguage(lang.code);
-                  setIsOpen(false);
-                }}
+                onClick={() => handleLanguageSelect(lang.code)}
                 type="button"
                 role="menuitem"
                 data-testid={`language-option-${lang.code}`}
