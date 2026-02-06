@@ -2,33 +2,31 @@ import { useEffect } from 'react';
 
 export function AntiCopyProtection() {
   useEffect(() => {
-    // Disable right-click
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
-      alert("Not allowed");
     };
 
-    // Disable F12, Ctrl+U, Ctrl+C, Ctrl+V
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!e.key) return; // Safety check for undefined key
+      if (!e.key) return;
       
       const key = e.key.toLowerCase();
       
       if (e.key === "F12") {
         e.preventDefault();
-        alert("Not allowed");
         return false;
       }
       
       if (e.ctrlKey && key === "u") {
         e.preventDefault();
-        alert("Not allowed");
         return false;
       }
       
       if (e.ctrlKey && (key === "c" || key === "v")) {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+          return true;
+        }
         e.preventDefault();
-        alert("Not allowed copy/paste");
         return false;
       }
     };
