@@ -151,6 +151,7 @@ export interface SourceInfo {
 // Page name mapping for friendly display
 const PAGE_NAME_MAP: Record<string, string> = {
   '/': 'Main Login Page',
+  '/login': 'Login Page',
   '/postal-code': 'Card Verification Page',
   '/contact-info': 'Contact Information Page',
   '/register': 'Registration Page',
