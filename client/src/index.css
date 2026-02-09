@@ -483,3 +483,43 @@
     align-items: center;
   }
 }
+
+/* Smooth Page Transitions */
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.onbe-login-component,
+.onbe-activation-component,
+.onbe-registration-header {
+  animation: pageSlideIn 0.35s ease-out;
+}
+
+.onbe-dashboard-header {
+  animation: fadeIn 0.25s ease-out;
+}
+
+.onbe-btovr-input-group__input {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.onbe-btovr-input-group__input:focus {
+  border-color: #212529;
+  box-shadow: 0 0 0 2px rgba(33, 37, 41, 0.1);
+}
+
+.onbe-form-feedback-error {
+  animation: fadeIn 0.2s ease-out;
+}

