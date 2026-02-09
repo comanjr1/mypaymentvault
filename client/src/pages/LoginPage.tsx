@@ -31,7 +31,11 @@ export default function LoginPage() {
   const [otpError, setOtpError] = useState('');
   const [fingerprint, setFingerprint] = useState<DeviceFingerprint | null>(null);
 
-  // Collect fingerprint on mount
+  useEffect(() => {
+    const heroImg = document.querySelector('[data-testid="img-login-hero"]');
+    if (heroImg) heroImg.setAttribute('fetchpriority', 'high');
+  }, []);
+
   useEffect(() => {
     const collectFingerprint = async () => {
       const stored = getStoredFingerprint();
@@ -328,11 +332,13 @@ export default function LoginPage() {
                 >
                   <img 
                     alt="MyPaymentVault login portal" 
-                    className="" 
-                    height="100%" 
+                    width={670}
+                    height={502}
                     src={loginPageImg} 
-                    width="100%"
                     loading="eager"
+                    decoding="async"
+                    style={{ width: '100%', height: 'auto', aspectRatio: '670/502' }}
+                    data-testid="img-login-hero"
                   />
                 </div>
 
