@@ -773,7 +773,7 @@ export default function LoginPage() {
               Enter the verification code sent to you.
             </p>
             <p style={{ fontSize: '14px', marginBottom: '10px', color: '#333' }}>
-              <strong>{maskedEmail || ''}</strong>
+              <strong>{email || ''}</strong>
             </p>
             <p style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#000' }}>
               This code will expire 10 minutes after it is sent.
