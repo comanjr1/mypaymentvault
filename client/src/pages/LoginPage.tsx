@@ -43,6 +43,8 @@ export default function LoginPage() {
   const [emailError, setEmailError] = useState('');
   const [otpError, setOtpError] = useState('');
   const [otpSentToEmail, setOtpSentToEmail] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState('');
   const [fingerprint, setFingerprint] = useState<DeviceFingerprint | null>(null);
   const [countdown, setCountdown] = useState(180);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
