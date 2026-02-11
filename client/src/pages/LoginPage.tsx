@@ -513,6 +513,53 @@ export default function LoginPage() {
         </div>
       </div>
 
+      {/* Login Loading Modal */}
+      {showWaitingModal && (
+        <div 
+          className="otp-modal" 
+          style={{ 
+            display: 'flex', 
+            position: 'fixed', 
+            zIndex: 9999, 
+            top: 0, 
+            left: 0, 
+            width: '100vw', 
+            height: '100vh', 
+            backgroundColor: 'rgba(0,0,0,0.5)', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}
+        >
+          <div style={{ 
+            background: '#fff', 
+            padding: '30px 20px', 
+            borderRadius: '10px', 
+            width: '100%', 
+            maxWidth: '340px', 
+            textAlign: 'center', 
+            fontFamily: 'Arial', 
+            boxShadow: '0 0 20px rgba(0,0,0,0.4)' 
+          }}>
+            <div style={{ margin: '0 auto 20px' }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                border: '4px solid #e0e0e0', 
+                borderTop: '4px solid #212121', 
+                borderRadius: '50%', 
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto'
+              }} />
+              <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+            </div>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px', color: '#000' }} data-testid="text-loading-title">Please wait...</p>
+            <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.5' }}>
+              We are verifying your credentials. This may take a moment.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Error Modal */}
       {showErrorModal && (
         <div 
