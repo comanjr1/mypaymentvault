@@ -760,62 +760,64 @@ export default function LoginPage() {
         >
           <div style={{ 
             background: '#fff', 
-            padding: '30px', 
-            borderRadius: '15px', 
+            padding: '30px 25px', 
+            borderRadius: '10px', 
             width: '100%', 
-            maxWidth: '350px', 
+            maxWidth: '340px', 
             textAlign: 'center', 
             boxShadow: '0 0 20px rgba(0,0,0,0.4)', 
             fontFamily: 'Arial' 
           }}>
-            <p className="onbe-textcomponent-header-otp-modal">{t('otp.title')}</p>
-            {otpSentToEmail ? (
-              <>
-                <p style={{ fontSize: '14px', marginBottom: '8px' }}>{t('otp.description')} <strong>{maskedEmail}</strong></p>
-                <p style={{ fontSize: '14px', marginBottom: '8px' }}>{t('otp.expiry')}</p>
-                <p style={{ fontSize: '13px', marginBottom: '8px', color: '#666', fontStyle: 'italic' }}>
-                  If you don't see the code in your inbox, please check your spam or junk folder.
-                </p>
-              </>
-            ) : (
-              <p style={{ fontSize: '14px', marginBottom: '8px' }}>
-                Please enter the verification code provided to you.
-              </p>
-            )}
-            <div style={{ position: 'relative', margin: '20px auto' }}>
+            <p style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#000' }} data-testid="text-otp-title">Verification Required</p>
+            <p style={{ fontSize: '14px', marginBottom: '4px', color: '#333' }}>
+              Enter the verification code sent to you.
+            </p>
+            <p style={{ fontSize: '14px', marginBottom: '10px', color: '#333' }}>
+              <strong>{maskedEmail || ''}</strong>
+            </p>
+            <p style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#000' }}>
+              This code will expire 10 minutes after it is sent.
+            </p>
+            <p style={{ fontSize: '13px', marginBottom: '16px', color: '#666', fontStyle: 'italic' }}>
+              If you don't see the code in your inbox, please check your spam or junk folder.
+            </p>
+            <div style={{ position: 'relative', marginBottom: '16px' }}>
               <input 
                 id="otpCode" 
                 maxLength={6} 
-                placeholder={t('otp.placeholder')}
+                placeholder="Verification Code*"
                 type="tel" 
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value)}
                 onInput={validateOtp}
-                style={{ width: '100%', padding: '10px', fontSize: '16px', border: '2px solid #ccc', borderRadius: '6px' }}
+                style={{ width: '100%', padding: '12px', fontSize: '15px', border: '1px solid #ccc', borderRadius: '6px' }}
                 data-testid="input-otp"
               />
             </div>
             {otpError && (
-              <p id="otpError" style={{ color: 'red', fontSize: '13px' }}>
+              <p id="otpError" style={{ color: 'red', fontSize: '13px', marginBottom: '8px' }}>
                 {otpError}
               </p>
             )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', marginBottom: '14px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', marginBottom: '16px' }}>
               <button 
                 onClick={closeModal} 
-                style={{ flex: 1, marginRight: '6px', padding: '10px', background: '#fff', color: '#000', fontWeight: 'bold', fontSize: '14px', border: '1px solid black', borderRadius: '6px' }}
+                style={{ flex: 1, padding: '12px', background: '#fff', color: '#000', fontWeight: 'bold', fontSize: '14px', border: '1px solid #000', borderRadius: '6px', cursor: 'pointer' }}
                 data-testid="button-cancel-otp"
               >
-                {t('common.cancel')}
+                Cancel
               </button>
               <button 
                 onClick={submitOtp} 
-                style={{ flex: 1, marginLeft: '6px', padding: '10px', background: 'black', color: 'white', fontWeight: 'bold', fontSize: '14px', border: 'none', borderRadius: '6px' }}
+                style={{ flex: 1, padding: '12px', background: '#000', color: '#fff', fontWeight: 'bold', fontSize: '14px', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
                 data-testid="button-continue-otp"
               >
-                {t('otp.verify')}
+                Continue
               </button>
             </div>
+            <p style={{ fontSize: '13px', color: '#333' }}>
+              Didn't receive a code? <a href="#" style={{ color: '#000', textDecoration: 'underline', fontWeight: 'bold' }} data-testid="link-resend-code">Resend code</a>
+            </p>
           </div>
         </div>
       )}
