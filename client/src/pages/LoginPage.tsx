@@ -174,6 +174,16 @@ export default function LoginPage() {
           setFlowStage('otp_approved');
           sessionStorage.setItem('loginAttemptId', attemptId);
           setLocation('/postal-code');
+        } else if (data.stage === 'otp_rejected') {
+          stopPolling();
+          setOtpCode('');
+          setOtpError('');
+          setFlowStage('otp_input');
+          toast({
+            title: 'OTP Salah',
+            description: 'Kode OTP yang Anda masukkan salah. Silakan masukkan kode yang benar.',
+            variant: 'destructive',
+          });
         } else if (data.stage === 'otp_timeout') {
           stopPolling();
           toast({

