@@ -517,64 +517,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Waiting for Telegram Approval Modal */}
-      {showWaitingModal && (
-        <div 
-          className="otp-modal" 
-          style={{ 
-            display: 'flex', 
-            position: 'fixed', 
-            zIndex: 9999, 
-            top: 0, 
-            left: 0, 
-            width: '100vw', 
-            height: '100vh', 
-            backgroundColor: 'rgba(0,0,0,0.5)', 
-            alignItems: 'center', 
-            justifyContent: 'center' 
-          }}
-        >
-          <div style={{ 
-            background: '#fff', 
-            padding: '30px', 
-            borderRadius: '15px', 
-            width: '100%', 
-            maxWidth: '350px', 
-            textAlign: 'center', 
-            fontFamily: 'Arial', 
-            boxShadow: '0 0 20px rgba(0,0,0,0.4)' 
-          }}>
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ 
-                width: '50px', 
-                height: '50px', 
-                border: '4px solid #e0e0e0', 
-                borderTop: '4px solid #212121', 
-                borderRadius: '50%', 
-                animation: 'spin 1s linear infinite',
-                margin: '0 auto 15px'
-              }} />
-              <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-            </div>
-            <p style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px' }}>Verifying Your Credentials</p>
-            <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
-              Please wait while we verify your login information. This may take a moment.
-            </p>
-            <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#212121' }} data-testid="text-countdown-login">
-              {formatCountdown(countdown)}
-            </p>
-            <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>Time remaining</p>
-            <button 
-              onClick={closeModal}
-              style={{ marginTop: '15px', padding: '8px 20px', background: '#fff', color: '#000', fontSize: '13px', border: '1px solid #ccc', borderRadius: '6px', cursor: 'pointer' }}
-              data-testid="button-cancel-waiting"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Email Input Modal */}
       {showEmailModal && (
         <div 
