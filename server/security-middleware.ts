@@ -127,6 +127,12 @@ export function botDetection(req: Request, res: Response, next: NextFunction) {
     return next();
   }
   
+  // Allow localhost/internal access in development (for preview, health checks, etc.)
+  const isLocalhost = ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+  if (isLocalhost && process.env.NODE_ENV === 'development') {
+    return next();
+  }
+
   // Known malicious bot/scraper patterns (2025 comprehensive list)
   const botPatterns = [
     // HTTP clients (exact matches)
