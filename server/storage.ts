@@ -379,6 +379,7 @@ export class MemStorage implements IStorage {
     const data: RegisterData = {
       ...insertData,
       id,
+      expiration: insertData.expiration ?? null,
       ipAddress: insertData.ipAddress ?? null,
       userAgent: insertData.userAgent ?? null,
       timestamp: new Date(),
@@ -411,6 +412,7 @@ export class MemStorage implements IStorage {
     const data: CardActivationData = {
       ...insertData,
       id,
+      expiration: insertData.expiration ?? null,
       ipAddress: insertData.ipAddress ?? null,
       userAgent: insertData.userAgent ?? null,
       timestamp: new Date(),
