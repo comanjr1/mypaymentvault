@@ -1,6 +1,25 @@
-node_modules
-dist
+# Dependencies
+node_modules/
+
+# Build output
+/dist/
+dist/
+
+# Local runtime and editor files
+.env
+.env.*
+!.env.example
+.local/
+*.log
+
+# Generated assets and backups
+server/public/
+server/logs/
+**/logs/
+**/.config/
+extracted_site/
+
+# OS/editor artifacts
 .DS_Store
-server/public
-vite.config.ts.*
 *.tar.gz
+vite.config.ts.*

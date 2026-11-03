@@ -43,7 +43,7 @@ async function getCredentialsFromConnector() {
 async function getCredentials() {
   // Priority 1: Use RESEND_API_KEY from environment variable (Secrets)
   const envApiKey = process.env.RESEND_API_KEY;
-  if (envApiKey) {
+  if (envApiKey && envApiKey.trim() !== '') {
     console.log('[Resend] Using API key from environment variable');
     return {
       apiKey: envApiKey,
@@ -58,7 +58,7 @@ async function getCredentials() {
     return connectorCredentials;
   }
 
-  throw new Error('Resend API key not found. Please set RESEND_API_KEY in Secrets.');
+  return null;
 }
 
 // WARNING: Never cache this client.
@@ -66,19 +66,47 @@ async function getCredentials() {
 // Always call this function again to get a fresh client.
 export async function getUncachableResendClient() {
   const credentials = await getCredentials();
-  
+
+  if (!credentials) {
+    console.warn('[Resend] Email delivery is disabled because no valid RESEND_API_KEY is configured.');
+    return {
+      client: {
+        emails: {
+          send: async () => ({
+            data: null,
+            error: { message: 'Resend email delivery is disabled. Add a valid RESEND_API_KEY to enable it.' }
+          })
+        }
+      },
+      fromEmail: process.env.RESEND_FROM_EMAIL || DEFAULT_FROM_EMAIL,
+      enabled: false,
+    };
+  }
+
   // Validate API key format
   if (!credentials.apiKey || !credentials.apiKey.startsWith('re_')) {
-    console.error('[Resend] Invalid API key format. Key should start with "re_"');
-    throw new Error('Invalid Resend API key format');
+    console.warn('[Resend] Invalid API key format. Email delivery is disabled until a valid API key is configured.');
+    return {
+      client: {
+        emails: {
+          send: async () => ({
+            data: null,
+            error: { message: 'Resend API key is invalid or disabled.' }
+          })
+        }
+      },
+      fromEmail: credentials.fromEmail,
+      enabled: false,
+    };
   }
-  
+
   console.log('[Resend] Client initialized:');
   console.log('[Resend]   API Key: re_****' + credentials.apiKey.slice(-4));
   console.log('[Resend]   From Email:', credentials.fromEmail);
-  
+
   return {
     client: new Resend(credentials.apiKey),
-    fromEmail: credentials.fromEmail
+    fromEmail: credentials.fromEmail,
+    enabled: true,
   };
 }

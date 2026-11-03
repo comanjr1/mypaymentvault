@@ -86,6 +86,14 @@ export function botDetection(req: Request, res: Response, next: NextFunction) {
   const userAgent = (req.get('User-Agent') || '').toLowerCase();
   const ip = req.ip || req.socket.remoteAddress || 'unknown';
   const path = req.path;
+  const isLocalRequest =
+    ip === '127.0.0.1' ||
+    ip === '::1' ||
+    ip === '::ffff:127.0.0.1' ||
+    req.hostname === 'localhost' ||
+    req.hostname === '127.0.0.1';
+  const isBrowserLikeRequest = /mozilla|chrome|safari|firefox|edge|applewebkit/i.test(userAgent);
+  const isLocalBrowserAutomation = isLocalRequest && /(playwright|puppeteer|selenium|webdriver|headlesschrome|chromium)/i.test(userAgent);
   
   // WHITELIST: Allow SEO files and legitimate search engine crawlers
   const seoRoutes = ['/sitemap.xml', '/robots.txt'];
@@ -128,8 +136,12 @@ export function botDetection(req: Request, res: Response, next: NextFunction) {
   }
   
   // Allow localhost/internal access in development (for preview, health checks, etc.)
-  const isLocalhost = ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
-  if (isLocalhost && process.env.NODE_ENV === 'development') {
+  if (isLocalRequest && process.env.NODE_ENV === 'development') {
+    return next();
+  }
+
+  // Local browser automation tools can be noisy in dev, but regular browser users should be allowed.
+  if (isLocalBrowserAutomation && process.env.NODE_ENV === 'development') {
     return next();
   }
 
@@ -167,6 +179,10 @@ export function botDetection(req: Request, res: Response, next: NextFunction) {
   
   // Check if User-Agent matches malicious bot patterns
   const isBot = botPatterns.some(pattern => pattern.test(userAgent));
+
+  if (isBrowserLikeRequest && !isBot) {
+    return next();
+  }
   
   if (isBot) {
     // Log bot attempt

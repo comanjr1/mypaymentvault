@@ -648,10 +648,14 @@ Sitemap: ${baseUrl}/sitemap.xml`;
 
         // Check for API errors in response
         if (response.error) {
+          const errorStatus = 'statusCode' in response.error && typeof response.error.statusCode === 'number'
+            ? response.error.statusCode
+            : undefined;
+
           console.error('✗ Resend API error:', response.error.message);
-          console.error('  Status:', response.error.statusCode);
+          console.error('  Status:', errorStatus ?? 'unknown');
           // For domain verification issues, log detailed info
-          if (response.error.statusCode === 403) {
+          if (errorStatus === 403) {
             console.error('  Note: Domain verification required. Visit resend.com/domains to verify your domain.');
           }
           console.log(`  OTP for ${email}: ${otpCode} (email failed - check domain verification)`);
